@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ComponentScript : MonoBehaviour {
+public class ComponentPanelScript : MonoBehaviour {
 
     public GameObject componentTemplate;
 

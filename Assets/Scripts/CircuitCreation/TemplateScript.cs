@@ -12,14 +12,17 @@ public class TemplateScript : MonoBehaviour {
 
     private Vector2 mousePosition;
     private bool isHidden;
+    private bool isRotated;
 
     void Start()
     {
         isHidden = false;
+        isRotated = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
+
         if(isWithinBoundary() && isHidden)
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = true;
@@ -36,11 +39,21 @@ public class TemplateScript : MonoBehaviour {
             Vector2 mouseRay = Camera.main.ScreenToWorldPoint(transform.position);
             RaycastHit2D rayHit = Physics2D.Raycast(mouseRay, Vector2.zero, Mathf.Infinity);
 
-            if (rayHit.collider == null)
+            if (rayHit.collider == null && isRotated)
+            {
+                Destroy(gameObject);
+                Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f));
+            } else if (rayHit.collider == null && !isRotated)
             {
                 Destroy(gameObject);
                 Instantiate(finalObject, transform.position, Quaternion.identity);
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            gameObject.transform.Rotate(Vector3.forward * 90);
+            isRotated = true;
         }
 	}
 
