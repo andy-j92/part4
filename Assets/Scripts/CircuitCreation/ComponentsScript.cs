@@ -5,6 +5,7 @@ using UnityEngine;
 public class ComponentsScript : MonoBehaviour {
 
     private bool isSelected;
+    private int childCount;
     // Update is called once per frame
     void Start()
     {
@@ -13,16 +14,26 @@ public class ComponentsScript : MonoBehaviour {
 
     void Update()
     {
+        if ((Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete)) && isSelected)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void OnMouseOver()
+    {
         if (Input.GetMouseButtonDown(0) && !isSelected)
         {
-            Debug.Log("here??");
             isSelected = true;
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
         }
         else if (Input.GetMouseButtonDown(0) && isSelected)
         {
             isSelected = false;
-            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            if(gameObject.tag.Equals("Wire"))
+                gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+            else
+                gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
 }

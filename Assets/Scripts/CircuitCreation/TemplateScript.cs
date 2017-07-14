@@ -22,11 +22,12 @@ public class TemplateScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        if(isWithinBoundary() && isHidden)
+        isHidden = isWithinBoundary();
+        if(isHidden)
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = true;
-        } else if (!isWithinBoundary())
+        }
+        else
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = false;
         }
@@ -39,7 +40,8 @@ public class TemplateScript : MonoBehaviour {
             Vector2 mouseRay = Camera.main.ScreenToWorldPoint(transform.position);
             RaycastHit2D rayHit = Physics2D.Raycast(mouseRay, Vector2.zero, Mathf.Infinity);
 
-            if (rayHit.collider == null && isRotated)
+            if (!isHidden) { }
+            else if (rayHit.collider == null && isRotated)
             {
                 Destroy(gameObject);
                 Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f));
@@ -48,6 +50,10 @@ public class TemplateScript : MonoBehaviour {
                 Destroy(gameObject);
                 Instantiate(finalObject, transform.position, Quaternion.identity);
             }
+        }
+        else if(Input.GetMouseButtonDown(1))
+        {
+            Destroy(gameObject);
         }
 
         if(Input.GetKeyDown(KeyCode.R))
@@ -59,9 +65,9 @@ public class TemplateScript : MonoBehaviour {
 
     bool isWithinBoundary()
     {
+
         if (Input.mousePosition.x < 20 || Input.mousePosition.x > 642 || Input.mousePosition.y < 36 || Input.mousePosition.y > 373)
             return false;
-        isHidden = true;
         return true;
     }
 }
