@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class ComponentsScript : MonoBehaviour {
 
     private bool isSelected;
-    private int childCount;
-    // Update is called once per frame
+
     void Start()
     {
         isSelected = false;
@@ -18,6 +18,7 @@ public class ComponentsScript : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+
     }
 
     void OnMouseOver()
@@ -36,4 +37,5 @@ public class ComponentsScript : MonoBehaviour {
                 gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
+    
 }

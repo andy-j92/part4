@@ -44,11 +44,11 @@ public class TemplateScript : MonoBehaviour {
             else if (rayHit.collider == null && isRotated)
             {
                 Destroy(gameObject);
-                Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f));
+                ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f)));
             } else if (rayHit.collider == null && !isRotated)
             {
                 Destroy(gameObject);
-                Instantiate(finalObject, transform.position, Quaternion.identity);
+                ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.identity));
             }
         }
         else if(Input.GetMouseButtonDown(1))

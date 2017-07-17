@@ -11,7 +11,6 @@ public class CircuitBoundaryScript : MonoBehaviour {
 
     void OnTriggerExit2D (Collider2D other)
     {
-        Debug.Log(other);
         other.gameObject.GetComponent<SpriteRenderer>().enabled = false;
     }
 }

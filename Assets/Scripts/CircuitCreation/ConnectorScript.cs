@@ -1,78 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class ConnectorScript : MonoBehaviour {
-    
-    [SerializeField]
-    public GameObject prefab;
 
-    [SerializeField]
-    [Range(1f, 200f)]
-    private float drawDistance = 50f;
+    private bool isSelected;
 
-    private GameObject drawObject;
-    private bool drawing = false;
-    private bool isRotated = false;
-    private Vector3 wireInstantiationPos;
-    
-    void Start()
+    public GameObject GetGameObject()
     {
-        wireInstantiationPos = gameObject.transform.position;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            endDraw();
-        }
-        else if (drawing)
-        {
-            whileDrawing();
-        }
-    }
-
-    void startDraw()
-    {
-        var instantiattionPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // create a new instance
-        drawObject = Instantiate(prefab, wireInstantiationPos, Quaternion.identity) as GameObject;
-
-        // save our draw starting point
-        drawObject.transform.position = wireInstantiationPos;
-
-        // allow the Update to call whileDrawing()
-        drawing = true;
-    }
-
-    void endDraw()
-    {
-        // forbid the Update do call whileDrawing()
-        drawing = false;
-    }
-
-    void whileDrawing()
-    {
-        
-        // manipulate the instance in whatever way you like
-        float mouseDistance = Vector3.Distance(wireInstantiationPos, Input.mousePosition);
-        drawObject.transform.localScale = new Vector3(mouseDistance, 1f, 1f);
+        return this.gameObject;
     }
 
     void OnMouseOver()
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = true;
+
         if (Input.GetMouseButtonDown(0))
         {
-            startDraw();
+            if(ConnectionHandler.connector1 == null)
+            {
+                ConnectionHandler.connector1 = gameObject;
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
+                isSelected = true;
+
+            }
+            else if(ConnectionHandler.connector1 != null && ConnectionHandler.connector1.gameObject.GetInstanceID() == gameObject.GetInstanceID())
+            {
+                ConnectionHandler.connector1 = null;
+                gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+                isSelected = false;
+            }
+            else if(ConnectionHandler.connector2 == null)
+            {
+                ConnectionHandler.connector2 = gameObject;
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
+                isSelected = true;
+
+            }
+            else if(ConnectionHandler.connector2 != null && ConnectionHandler.connector2.gameObject.GetInstanceID() == gameObject.GetInstanceID())
+            {
+                ConnectionHandler.connector2 = null;
+                gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+                isSelected = false;
+            }
         }
     }
 
     void OnMouseExit()
     {
-        gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        if(!isSelected)
+            gameObject.GetComponent<SpriteRenderer>().enabled = false;
+
     }
 }
