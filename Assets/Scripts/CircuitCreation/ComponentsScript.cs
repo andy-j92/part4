@@ -16,6 +16,7 @@ public class ComponentsScript : MonoBehaviour {
     {
         if ((Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete)) && isSelected)
         {
+            ConnectionHandler.circuitComponents.Remove(gameObject);
             Destroy(gameObject);
         }
 

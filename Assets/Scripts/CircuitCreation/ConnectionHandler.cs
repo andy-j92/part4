@@ -7,10 +7,10 @@ public class ConnectionHandler : MonoBehaviour {
 
     public static List<GameObject> circuitComponents;
     public GameObject wire;
+    private GameObject newWire;
     private float multiplier;
     private float scale;
 
-    private LinkedList<GameObject> finalCircuit;
     private Vector2 componentPos1;
     private Vector2 componentPos2;
     public static GameObject connector1;
@@ -19,8 +19,7 @@ public class ConnectionHandler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        multiplier = 1.28f;
-        finalCircuit = new LinkedList<GameObject>();
+        multiplier = 1.26f;
         circuitComponents = new List<GameObject>();
 	}
 	
@@ -39,28 +38,31 @@ public class ConnectionHandler : MonoBehaviour {
     {
         var pos1 = connector1.transform.position;
         var pos2 = connector2.transform.position;
-        GameObject newWire = null;
+        var xDiff = Mathf.Round(pos1.x - pos2.x);
+        var yDiff = Mathf.Round(pos1.y - pos2.y);
 
-        if(pos1.x - pos2.x < 0)
+        if(xDiff < 0)
         {
             newWire = Instantiate(wire, pos1, Quaternion.identity);
             scale = Mathf.Abs(pos1.x - pos2.x) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
 
         }
-        else if(pos1.x - pos2.x > 0)
+        else if(xDiff > 0)
         {
+            Debug.Log(pos1.x);
+            Debug.Log(pos2.x);
             newWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 180f));
             scale = Mathf.Abs(pos1.x - pos2.x) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
-        else if(pos1.y - pos2.y < 0)
+        else if(yDiff < 0)
         {
             newWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 90f));
             scale = Mathf.Abs(pos1.y - pos2.y) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
-        else if (pos1.y - pos2.y > 0)
+        else if (yDiff > 0)
         {
             newWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 270f));
             scale = Mathf.Abs(pos1.y - pos2.y) * multiplier;
