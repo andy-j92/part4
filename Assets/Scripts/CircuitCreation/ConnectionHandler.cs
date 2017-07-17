@@ -39,33 +39,36 @@ public class ConnectionHandler : MonoBehaviour {
     {
         var pos1 = connector1.transform.position;
         var pos2 = connector2.transform.position;
+        GameObject newWire = null;
 
         if(pos1.x - pos2.x < 0)
         {
-            var scaleWire = Instantiate(wire, pos1, Quaternion.identity);
+            newWire = Instantiate(wire, pos1, Quaternion.identity);
             scale = Mathf.Abs(pos1.x - pos2.x) * multiplier;
-            scaleWire.transform.localScale = new Vector3(scale, 1, 1);
+            newWire.transform.localScale = new Vector3(scale, 1, 1);
 
         }
         else if(pos1.x - pos2.x > 0)
         {
-            var scaleWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 180f));
+            newWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 180f));
             scale = Mathf.Abs(pos1.x - pos2.x) * multiplier;
-            scaleWire.transform.localScale = new Vector3(scale, 1, 1);
+            newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
         else if(pos1.y - pos2.y < 0)
         {
-            var scaleWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 90f));
+            newWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 90f));
             scale = Mathf.Abs(pos1.y - pos2.y) * multiplier;
-            scaleWire.transform.localScale = new Vector3(scale, 1, 1);
+            newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
         else if (pos1.y - pos2.y > 0)
         {
-            var scaleWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 270f));
+            newWire = Instantiate(wire, pos1, Quaternion.Euler(0, 0, 270f));
             scale = Mathf.Abs(pos1.y - pos2.y) * multiplier;
-            scaleWire.transform.localScale = new Vector3(scale, 1, 1);
+            newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
 
+
+        ConnectionHandler.circuitComponents.Add(newWire);
         connector1.GetComponent<SpriteRenderer>().color = Color.white;
         connector2.GetComponent<SpriteRenderer>().color = Color.white;
 
