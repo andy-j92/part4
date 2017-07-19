@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -51,7 +50,7 @@ public class SaveButtonHandler : MonoBehaviour {
             {
                 sb.Append("Resistor ");
             }
-            else if (component.tag.Equals("Node"))
+            else if (component.tag.Equals("Node") || component.tag.Equals("StartingNode") || component.tag.Equals("EndingNode"))
             {
                 sb.Append("Node ");
             }
@@ -74,19 +73,25 @@ public class SaveButtonHandler : MonoBehaviour {
         sb.Append(component.transform.localScale.x + " ");
         sb.Append(component.transform.localScale.y + " ");
         sb.Append(component.transform.localScale.z + " ");
+        sb.Append(component.transform.localRotation.x + " ");
+        sb.Append(component.transform.localRotation.y + " ");
+        sb.Append(component.transform.localRotation.z + " ");
+        sb.Append(component.transform.localRotation.w + " ");
         sb.AppendLine();
 
     }
 
     void CreateAndWriteToFile(string filename)
     {
-        if (File.Exists(filename + ".txt"))
+        var filePath = "Circuits/";
+
+        if (File.Exists(filePath + filename + ".txt"))
         {
             warning.SetActive(true);
             return;
         }
 
-        var file = File.CreateText(filename + ".txt");
+        var file = File.CreateText(filePath + filename + ".txt");
         file.WriteLine(sb.ToString());
         file.Close();
 

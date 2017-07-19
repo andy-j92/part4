@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ComponentsScript : MonoBehaviour {
 
@@ -24,18 +25,21 @@ public class ComponentsScript : MonoBehaviour {
 
     void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(0) && !isSelected)
+        if (gameObject.GetComponent<ComponentsScript>().enabled)
         {
-            isSelected = true;
-            gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
-        }
-        else if (Input.GetMouseButtonDown(0) && isSelected)
-        {
-            isSelected = false;
-            if(gameObject.tag.Equals("Wire"))
-                gameObject.GetComponent<SpriteRenderer>().color = Color.black;
-            else
-                gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            if (Input.GetMouseButtonDown(0) && !isSelected)
+            {
+                isSelected = true;
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
+            }
+            else if (Input.GetMouseButtonDown(0) && isSelected)
+            {
+                isSelected = false;
+                if (gameObject.tag.Equals("Wire"))
+                    gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+                else
+                    gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            }
         }
     }
     
