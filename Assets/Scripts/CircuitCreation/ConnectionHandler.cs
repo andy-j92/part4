@@ -85,10 +85,7 @@ public class ConnectionHandler : MonoBehaviour {
             newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
 
-        Debug.Log(scale);
-
-
-        ConnectionHandler.circuitComponents.Add(newWire);
+        circuitComponents.Add(newWire);
         connector1.GetComponent<SpriteRenderer>().color = Color.white;
         connector2.GetComponent<SpriteRenderer>().color = Color.white;
 
@@ -96,8 +93,6 @@ public class ConnectionHandler : MonoBehaviour {
 
     bool isNode(string parentTag1, string parentTag2)
     {
-        Debug.Log(parentTag1);
-        Debug.Log(parentTag2);
         if (parentTag1 == "Node" || parentTag1 == "StartingNode" || parentTag1 == "EndingNode" ||
             parentTag2 == "Node" || parentTag2 == "StartingNode" || parentTag2 == "EndingNode")
             return true;

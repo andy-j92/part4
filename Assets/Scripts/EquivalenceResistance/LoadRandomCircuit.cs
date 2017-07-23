@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,11 +10,17 @@ public class LoadRandomCircuit : MonoBehaviour {
     public GameObject resistor;
     public GameObject wire;
 
+    public static Dictionary<GameObject, List<GameObject>> connectedComponents;
+
     void Start()
     {
+        connectedComponents = new Dictionary<GameObject, List<GameObject>>();
+
         var circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         var index = Random.Range(0, circuits.Length);
-        DrawCircuit(circuits[0]);
+        DrawCircuit(circuits[index]);
+
+        StartCoroutine("SetUpCircuit");
     }
 
     void DrawCircuit(FileInfo file)
@@ -24,8 +32,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             if (text == "")
             {
-                DisableScripts();
-                return;
+                break;
             }
 
             var info = text.Split(' ');
@@ -49,7 +56,6 @@ public class LoadRandomCircuit : MonoBehaviour {
                 if (position.x == -7 && position.y == 2 && position.z == 0)
                 {
                     n.tag = "StartingNode";
-                    n.AddComponent<CircuitHandler>();
                 }
                 else if (position.x == -7 && position.y == -2 && position.z == 0)
                 {
@@ -63,10 +69,9 @@ public class LoadRandomCircuit : MonoBehaviour {
                 w.transform.localScale = scale;
                 w.transform.localRotation = rotation;
             }
+
         }
-
-
-
+        DisableScripts();
     }
 
     Vector3 GetPosition(string[] info)
@@ -108,6 +113,32 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             script.enabled = false;
         }
+    }
+
+    void DisableColliders()
+    {
+        Debug.Log(connectedComponents.Count);
+        foreach (var key in connectedComponents.Keys)
+        {
+            if (key.gameObject.tag != "Resistor")
+            {
+                key.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+                foreach (var child in key.GetComponentsInChildren<BoxCollider2D>())
+                {
+                    child.enabled = false;
+                }
+            }
+        }
+        
+    }
+
+    IEnumerator SetUpCircuit()
+    {
+        var startingComp = GameObject.FindGameObjectWithTag("StartingNode");
+        yield return new WaitForSeconds(0.1f);
+        DisableColliders();
+        var ch = new CircuitHandler(connectedComponents);
+        ch.StartSetUp();
     }
 
 
