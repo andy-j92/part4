@@ -86,8 +86,7 @@ public class ConnectionHandler : MonoBehaviour {
         }
 
         circuitComponents.Add(newWire);
-        connector1.GetComponent<SpriteRenderer>().color = Color.white;
-        connector2.GetComponent<SpriteRenderer>().color = Color.white;
+        ResetConnectors(connector1, connector2);
 
     }
 
@@ -104,5 +103,21 @@ public class ConnectionHandler : MonoBehaviour {
         if (parentTag == "Node" || parentTag == "StartingNode" || parentTag == "EndingNode")
             return true;
         return false;
+    }
+
+    void ResetConnectors(GameObject connector1, GameObject connector2)
+    {
+        try
+        {
+            connector1.GetComponent<SpriteRenderer>().color = Color.white;
+            connector2.GetComponent<SpriteRenderer>().color = Color.white;
+
+            connector1.GetComponent<SpriteRenderer>().enabled = false;
+            connector2.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        catch (System.Exception)
+        {
+            
+        }
     }
 }

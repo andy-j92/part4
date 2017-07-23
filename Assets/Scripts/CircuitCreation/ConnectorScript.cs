@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ConnectorScript : MonoBehaviour {
 
     private bool isSelected;
 
-    public GameObject GetGameObject()
+    void Start()
     {
-        return this.gameObject;
+        if (SceneManager.GetActiveScene().name.Equals("CircuitCreator"))
+            Destroy(gameObject.GetComponentInParent<Rigidbody2D>());
     }
 
     void OnMouseOver()
@@ -37,7 +39,7 @@ public class ConnectorScript : MonoBehaviour {
                 {
                     ConnectionHandler.connector2 = gameObject;
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
-                    isSelected = true;
+                    gameObject.GetComponent<SpriteRenderer>().enabled = false;
 
                 }
                 else if (ConnectionHandler.connector2 != null && ConnectionHandler.connector2.gameObject.GetInstanceID() == gameObject.GetInstanceID())

@@ -60,4 +60,12 @@ public class CircuitHandler {
         componentOrder.Add(deComponent);
         prevComp = component;
     }
+
+    void SerialTransform()
+    {
+        if(selected1 != null && selected2 != null)
+        {
+
+        }
+    }
 }
