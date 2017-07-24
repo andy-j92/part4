@@ -26,6 +26,7 @@ public class LoadRandomCircuit : MonoBehaviour {
     void DrawCircuit(FileInfo file)
     {
         StreamReader reader = file.OpenText();
+
         string text;
 
         while((text = reader.ReadLine()) != null)
@@ -71,6 +72,7 @@ public class LoadRandomCircuit : MonoBehaviour {
             }
 
         }
+        reader.Close();
         DisableScripts();
     }
 
@@ -117,7 +119,6 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     void DisableColliders()
     {
-        Debug.Log(connectedComponents.Count);
         foreach (var key in connectedComponents.Keys)
         {
             if (key.gameObject.tag != "Resistor")
@@ -139,6 +140,16 @@ public class LoadRandomCircuit : MonoBehaviour {
         DisableColliders();
         var ch = new CircuitHandler(connectedComponents);
         ch.StartSetUp();
+    }
+
+    public void LoadNewCircuit()
+    {
+        foreach (var component in connectedComponents.Keys)
+        {
+            Destroy(component);
+        }
+        Start();
+
     }
 
 

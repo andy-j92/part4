@@ -32,7 +32,7 @@ public class ComponentsScript : MonoBehaviour {
     {
         if (Input.GetMouseButtonDown(0) && !isSelected)
         {
-            if (SceneManager.GetActiveScene().name.Equals("EqualentResistance"))
+            if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
             {
                 if (CircuitHandler.selected1 == null)
                 {
@@ -80,7 +80,7 @@ public class ComponentsScript : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (SceneManager.GetActiveScene().Equals("EquivalentResistance"))
+        if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
         {
             if (!components.Contains(collider.gameObject))
             {
