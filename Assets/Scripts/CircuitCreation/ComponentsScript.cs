@@ -71,7 +71,7 @@ public class ComponentsScript : MonoBehaviour {
                 CircuitHandler.selected2 = null;
             
             if (gameObject.tag.Equals("Wire"))
-                gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+                gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
             else
                 gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         }

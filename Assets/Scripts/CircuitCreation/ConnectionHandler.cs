@@ -23,7 +23,7 @@ public class ConnectionHandler : MonoBehaviour {
 	void Start () {
         circuitComponents = new List<GameObject>();
 
-        Vector3 startNodePos = new Vector3(-7, 2, 0);
+        Vector3 startNodePos = new Vector3(-7, 3, 0);
         Vector3 endNodePos = new Vector3(-7, -2, 0);
 
         var startNode = Instantiate(node, startNodePos, Quaternion.identity);
