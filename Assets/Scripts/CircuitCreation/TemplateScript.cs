@@ -58,8 +58,16 @@ public class TemplateScript : MonoBehaviour {
 
         if(Input.GetKeyDown(KeyCode.R))
         {
-            gameObject.transform.Rotate(Vector3.forward * 90);
-            isRotated = true;
+            if (!isRotated)
+            {
+                gameObject.transform.Rotate(Vector3.forward * 90);
+                isRotated = true;
+            }
+            else
+            {
+                gameObject.transform.Rotate(Vector3.forward * -90);
+                isRotated = false;
+            }
         }
 	}
 

@@ -8,9 +8,19 @@ public class ResetButtonHandler : MonoBehaviour {
 	public void DeleteAllComponents()
     {
         var components = ConnectionHandler.circuitComponents;
+        ConnectionHandler.circuitComponents = new List<GameObject>();
+
         foreach (GameObject component in components)
         {
-            Destroy(component);
+            if (component.tag == "StartingNode" || component.tag == "EndingNode")
+            {
+                ConnectionHandler.circuitComponents.Add(component);
+            }
+            else
+            {
+                Destroy(component);
+            }
         }
+
     }
 }
