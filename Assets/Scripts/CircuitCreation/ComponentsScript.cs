@@ -10,7 +10,7 @@ public class ComponentsScript : MonoBehaviour {
     private bool isSelected;
     private bool isTriggered;
     private List<GameObject> nextComponents = new List<GameObject>();
-    List<GameObject> components = new List<GameObject>();
+    private List<GameObject> components = new List<GameObject>();
 
     void Start()
     {
@@ -82,39 +82,63 @@ public class ComponentsScript : MonoBehaviour {
     {
         if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
         {
-            if (!components.Contains(collider.gameObject))
+            if (collider.tag == "Connector" || collider.tag == "Wire")
             {
-                var parent = collider.gameObject.transform.parent;
+                var parent = collider.transform.parent;
+
                 if (parent != null && !components.Contains(parent.gameObject))
                 {
                     components.Add(parent.gameObject);
                 }
-                else
+                else if(!components.Contains(collider.gameObject))
                 {
                     components.Add(collider.gameObject);
                 }
             }
-
-            if (!isTriggered)
+            else if (!components.Contains(collider.gameObject))
             {
-                foreach (var component in components)
-                {
+                components.Add(collider.gameObject);
+            }
 
-                    if (component.gameObject.tag != "Connector" && component.gameObject.tag != gameObject.tag && !nextComponents.Contains(component.gameObject))
-                    {
-                        nextComponents.Add(component.gameObject);
-                    }
-                }
-
-                if (!LoadRandomCircuit.connectedComponents.ContainsKey(gameObject))
-                {
-                    LoadRandomCircuit.connectedComponents.Add(gameObject, nextComponents);
-                }
-
-                isTriggered = true;
-
+            if (!CircuitHandler.connectedComponents.ContainsKey(gameObject))
+            {
+                CircuitHandler.connectedComponents.Add(gameObject, components);
+            }
+            else
+            {
+                CircuitHandler.connectedComponents.Remove(gameObject);
+                CircuitHandler.connectedComponents.Add(gameObject, components);
             }
         }
-
     }
 }
+
+//if (!components.Contains(collider.gameObject))
+//            {
+//                if (collider.gameObject.tag == "Collider" || collider.gameObject.tag == "Wire")
+//                {
+//                    var parent = collider.gameObject.transform.parent;
+//                    if (parent != null && !components.Contains(parent.gameObject))
+//                    {
+//                        components.Add(parent.gameObject);
+//                    }
+//                    else if(parent == null && !components.Contains(collider.gameObject))
+//                    {
+//                        components.Add(collider.gameObject);
+//                    }
+//                }
+//                else if (!components.Contains(collider.gameObject))
+//                {
+//                    components.Add(collider.gameObject);
+//                }
+//            }
+
+//            if (CircuitHandler.connectedComponents.ContainsKey(gameObject))
+//            {
+//                CircuitHandler.connectedComponents.Remove(gameObject);
+//                CircuitHandler.connectedComponents.Add(gameObject, components);
+//            }
+//            else
+//            {
+//                CircuitHandler.connectedComponents.Add(gameObject, components);
+//            }

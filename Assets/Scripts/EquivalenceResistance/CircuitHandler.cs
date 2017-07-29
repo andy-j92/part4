@@ -4,62 +4,128 @@ using UnityEngine;
 
 public class CircuitHandler : MonoBehaviour {
 
-    private Dictionary<GameObject, List<GameObject>> _components;
     private GameObject startingComp;
     private GameObject prevComp;
-    private List<GameObject> nextComp = new List<GameObject>();
     private bool hasMultiple = false;
-    private List<GameObject> connectedComp;
-    public static List<DoubleEnded> componentOrder;
+    private bool isAdded = false;
+    public static List<DoubleEnded> componentOrder = new List<DoubleEnded>();
+    public static List<GameObject> components = new List<GameObject>();
+
+    public static Dictionary<GameObject, List<GameObject>> connectedComponents = new Dictionary<GameObject, List<GameObject>>();
+    private Queue<GameObject> connectionQueue = new Queue<GameObject>();
+    private List<GameObject> processedComponents = new List<GameObject>();
+
 
     public static GameObject selected1;
     public static GameObject selected2;
 
-    public CircuitHandler(Dictionary<GameObject, List<GameObject>> components)
-    {
-        _components = components;
-        connectedComp = new List<GameObject>();
-    }
-
     public void StartSetUp()
     {
-        componentOrder = new List<DoubleEnded>();
-
-        var components = _components.Keys;
-
-        foreach (var component in components)
+        DisableColliders();
+        //var components = connectedComponents.Keys;
+        //foreach (var component in components)
+        //{
+        //    Debug.Log(component.tag);
+        //    if(component.tag == "Resistor" || component.tag == "Node" || component.tag == "StartingNode" || component.tag == "EndingNode")
+        //        SetUpConnection(component);
+        //}
+        var startingComp = GameObject.FindGameObjectWithTag("StartingNode");
+        connectionQueue.Enqueue(startingComp);
+        while (connectionQueue.Count > 0)
         {
-            SetUpConnection(component);
+            var component = connectionQueue.Dequeue();
+            if(!processedComponents.Contains(component))
+            {
+                SetUpConnection(component);
+                processedComponents.Add(component);
+            }
+        }
+        SetPreviousLink();
+    }
+
+    public void SetPreviousLink()
+    {
+        //retrieves next components and sets prev components to itself
+        foreach (var deComponent in componentOrder)
+        {
+            foreach (var comp in deComponent.GetNextComponent())
+            {
+                var deComp = GetDoubledEndedObject(comp);
+                if(deComp.GetNextComponent().Contains(deComponent.GetCurrentComponent()))
+                {
+                    if(deComp.GetPreviousComponent() == null)
+                    {
+                        List<GameObject> prevCompList = new List<GameObject>();
+                        prevCompList.Add(deComponent.GetCurrentComponent());
+                        deComp.SetPreviousComponent(prevCompList);
+                    }
+                    else
+                    {
+                        var prevCompList = deComp.GetPreviousComponent();
+                        prevCompList.Add(deComponent.GetCurrentComponent());
+                        deComp.SetPreviousComponent(prevCompList);
+                    }
+
+                    if (deComp.GetNextComponent().Contains(deComponent.GetCurrentComponent()))
+                        deComp.GetNextComponent().Remove(deComponent.GetCurrentComponent());
+                }
+            }
         }
     }
 
     void SetUpConnection(GameObject component)
     {
+        List<GameObject> nextComp = new List<GameObject>();
         DoubleEnded deComponent = new DoubleEnded(component);
-
-        if (prevComp != null)
-        {
-            deComponent.SetPreviousComponent(prevComp);
-        }
-
-        _components.TryGetValue(component, out connectedComp);
-
-        if (connectedComp == null || component.tag.Equals("EndingNode"))
+        if (componentOrder.Contains(GetDoubledEndedObject(component)))
         {
             return;
         }
-        else
+        List<GameObject> connectedComp = null;
+        connectedComponents.TryGetValue(component, out connectedComp);
+        if (connectedComp == null)
+        {
+            return;
+        }
+        else if(connectedComp != null)
         {
             foreach (var comp in connectedComp)
             {
-                nextComp.Add(comp);
+                Transform parent;
+                //get the connected component of the wire, thereby directly linked two components without saving wires
+                if (comp.tag == "Wire")
+                {
+                    List<GameObject> wireConnectedComp = null;
+                    connectedComponents.TryGetValue(comp, out wireConnectedComp);
+                    if (wireConnectedComp != null)
+                    {
+                        foreach (var item in wireConnectedComp)
+                        {
+                            parent = item.transform.parent;
+                            if (parent != null && !nextComp.Contains(parent.gameObject) && parent.gameObject != component)
+                            {
+                                nextComp.Add(parent.gameObject);
+                                connectionQueue.Enqueue(parent.gameObject);
+                            }
+                        }
+                    }
+                }
+                else if(comp.tag == "Connector" && !nextComp.Contains(comp.transform.parent.gameObject))
+                {
+                    parent = comp.transform.parent;
+                    nextComp.Add(parent.gameObject);
+                    connectionQueue.Enqueue(parent.gameObject);
+                }
+                else
+                {
+                    nextComp.Add(comp);
+                    connectionQueue.Enqueue(comp);
+                }
             }
         }
 
         deComponent.SetNextComponent(nextComp);
-        nextComp = new List<GameObject>();
         componentOrder.Add(deComponent);
-        prevComp = component;
     }
 
     public void SerialTransform()
@@ -74,7 +140,7 @@ public class CircuitHandler : MonoBehaviour {
         }
     }
 
-    DoubleEnded GetDoubledEndedObject(GameObject component)
+    public static DoubleEnded GetDoubledEndedObject(GameObject component)
     {
         foreach (var item in componentOrder)
         {
@@ -90,36 +156,67 @@ public class CircuitHandler : MonoBehaviour {
     {
         var nextComp1 = component1.GetNextComponent();
         var nextComp2 = component2.GetNextComponent();
+
         if (nextComp1.Count > 1 || nextComp2.Count > 1 || nextComp1 == null || nextComp2 == null)
             return false;
-        else if (component1.GetPreviousComponent().tag == component2.GetCurrentComponent().tag || component2.GetPreviousComponent().tag == component1.GetCurrentComponent().tag)
+        //else if (component1.GetPreviousComponent().tag == component2.GetCurrentComponent().tag || component2.GetPreviousComponent().tag == component1.GetCurrentComponent().tag)
+        //{
+        //    return true;
+        //}
+        else if(nextComp1.Count == 1)
         {
-            return true;
-        }
-        else if (nextComp1.Count == 1)
-        {
-            if (nextComp1[0].tag == "Node")
+            var next1 = nextComp1[0];
+            var next2 = nextComp2[0];
+            if (next1.tag == "Node" && nextComp2.Count == 1 && next2.tag == "Node")
             {
-                GameObject nextComp = nextComp1[0];
-                while (nextComp.tag == "Node")
+                while(next2.tag == "Node")
                 {
-                    Debug.Log("HEREE");
-                    var deComponent = GetDoubledEndedObject(nextComp);
-                    if (deComponent.GetNextComponent().Count > 1 || deComponent.GetNextComponent().Count == 0)
-                        return false;
-                    else if (deComponent.GetNextComponent().Count == 1)
+                    var comp = GetDoubledEndedObject(next2);
+                    if(comp.GetNextComponent().Count == 1)
                     {
-                        nextComp = deComponent.GetNextComponent()[0];
-                        if (nextComp.tag == "Resistor")
-                            return true;
+                        next2 = comp.GetNextComponent()[0];
                     }
+                    if (next1 == next2)
+                        return true;
                 }
             }
-            else if (nextComp1[0].tag == "Resistor")
+        }
+        else if(nextComp2.Count == 1)
+        {
+            var next1 = nextComp1[0];
+            var next2 = nextComp2[0];
+            if (next1.tag == "Node" && nextComp1.Count == 1 && next2.tag == "Node")
             {
-                return true;
+                while (next2.tag == "Node")
+                {
+                    var comp = GetDoubledEndedObject(next1);
+                    if (comp.GetNextComponent().Count == 1)
+                    {
+                        next1 = comp.GetNextComponent()[0];
+                    }
+                    if (next1 == next2)
+                        return true;
+                }
             }
         }
         return false;
     }
+
+    void DisableColliders()
+    {
+        foreach (var key in connectedComponents.Keys)
+        {
+            if (key.tag != "Resistor")
+            {
+                key.GetComponent<BoxCollider2D>().enabled = false;
+                foreach (var child in key.GetComponentsInChildren<BoxCollider2D>())
+                {
+                    child.enabled = false;
+                }
+            }
+        }
+
+    }
+
+
 }

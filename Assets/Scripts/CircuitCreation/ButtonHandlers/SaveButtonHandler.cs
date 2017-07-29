@@ -8,6 +8,7 @@ public class SaveButtonHandler : MonoBehaviour {
 
     private GameObject saveModal;
     private GameObject warning;
+    private GameObject noTitleWanring;
     private GameObject filenameInput;
     private GameObject succesful;
     private StringBuilder sb;
@@ -18,10 +19,12 @@ public class SaveButtonHandler : MonoBehaviour {
         sb = new StringBuilder();
         filenameInput = GameObject.FindGameObjectWithTag("FilenameInput");
         warning = GameObject.FindGameObjectWithTag("Warning");
+        noTitleWanring = GameObject.FindGameObjectWithTag("NoTitleWarning");
         saveModal = GameObject.FindGameObjectWithTag("SavePanel");
         succesful = GameObject.FindGameObjectWithTag("SuccessfulFeedback");
 
         warning.SetActive(false);
+        noTitleWanring.SetActive(false);
         saveModal.SetActive(false);
         succesful.SetActive(false);
 
@@ -42,7 +45,6 @@ public class SaveButtonHandler : MonoBehaviour {
     {
         
         var filename = filenameInput.GetComponent<InputField>().text;
-
 
         foreach (GameObject component in ConnectionHandler.circuitComponents)
         {
@@ -88,6 +90,11 @@ public class SaveButtonHandler : MonoBehaviour {
         if (File.Exists(filePath + filename + ".txt"))
         {
             warning.SetActive(true);
+            return;
+        }
+        else if(filename == "")
+        {
+            noTitleWanring.SetActive(true);
             return;
         }
 

@@ -11,6 +11,7 @@ public class Resistor : MonoBehaviour {
         {
             var value = gameObject.GetComponent<TextMesh>();
             value.text = Random.Range(5, 25).ToString();
+            // change Random range value
         }
 	}
 }

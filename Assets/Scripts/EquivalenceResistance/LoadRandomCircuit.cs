@@ -10,20 +10,14 @@ public class LoadRandomCircuit : MonoBehaviour {
     public GameObject resistor;
     public GameObject wire;
 
-    public static Dictionary<GameObject, List<GameObject>> connectedComponents;
-
     void Start()
     {
-        connectedComponents = new Dictionary<GameObject, List<GameObject>>();
-
         var circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         var index = Random.Range(0, circuits.Length);
-        DrawCircuit(circuits[index]);
-
-        StartCoroutine("SetUpCircuit");
+        StartCoroutine(DrawCircuit(circuits[index]));
     }
 
-    void DrawCircuit(FileInfo file)
+    IEnumerator DrawCircuit(FileInfo file)
     {
         StreamReader reader = file.OpenText();
 
@@ -42,38 +36,43 @@ public class LoadRandomCircuit : MonoBehaviour {
             Vector3 scale = GetScale(info);
             Quaternion rotation = GetRotation(info);
 
+            GameObject component = null;
             if(type.Equals("Resistor"))
             {
-                var r = Instantiate(resistor, position, Quaternion.identity);
-                r.transform.localScale = scale;
-                r.transform.localRotation = rotation;
+                component = Instantiate(resistor, position, Quaternion.identity);
+                component.transform.localScale = scale;
+                component.transform.localRotation = rotation;
             }
             else if(type.Equals("Node"))
             {
-                var n = Instantiate(node, position, Quaternion.identity);
-                n.transform.localScale = scale;
-                n.transform.localRotation = rotation;
+                component = Instantiate(node, position, Quaternion.identity);
+                component.transform.localScale = scale;
+                component.transform.localRotation = rotation;
 
                 if (position.x == -7 && position.y == 2 && position.z == 0)
                 {
-                    n.tag = "StartingNode";
+                    component.tag = "StartingNode";
                 }
                 else if (position.x == -7 && position.y == -2 && position.z == 0)
                 {
-                    n.tag = "EndingNode";
+                    component.tag = "EndingNode";
                 }
 
             }
             else if(type.Equals("Wire"))
             {
-                var w = Instantiate(wire, position, Quaternion.identity);
-                w.transform.localScale = scale;
-                w.transform.localRotation = rotation;
+                component = Instantiate(wire, position, Quaternion.identity);
+                component.transform.localScale = scale;
+                component.transform.localRotation = rotation;
             }
+            CircuitHandler.components.Add(component);
 
         }
         reader.Close();
+        yield return new WaitForSeconds(0.1f);
+        new CircuitHandler().StartSetUp();
         DisableScripts();
+
     }
 
     Vector3 GetPosition(string[] info)
@@ -117,37 +116,14 @@ public class LoadRandomCircuit : MonoBehaviour {
         }
     }
 
-    void DisableColliders()
-    {
-        foreach (var key in connectedComponents.Keys)
-        {
-            if (key.gameObject.tag != "Resistor")
-            {
-                key.gameObject.GetComponent<BoxCollider2D>().enabled = false;
-                foreach (var child in key.GetComponentsInChildren<BoxCollider2D>())
-                {
-                    child.enabled = false;
-                }
-            }
-        }
-        
-    }
-
-    IEnumerator SetUpCircuit()
-    {
-        var startingComp = GameObject.FindGameObjectWithTag("StartingNode");
-        yield return new WaitForSeconds(0.1f);
-        DisableColliders();
-        var ch = new CircuitHandler(connectedComponents);
-        ch.StartSetUp();
-    }
-
     public void LoadNewCircuit()
     {
-        foreach (var component in connectedComponents.Keys)
+        foreach (var component in CircuitHandler.connectedComponents.Keys)
         {
             Destroy(component);
         }
+        CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
+        CircuitHandler.components = new List<GameObject>();
         Start();
 
     }

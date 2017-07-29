@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DoubleEnded {
 
-    private GameObject _prevComponent;
+    private List<GameObject> _prevComponent;
     private List<GameObject> _nextComponent;
     private GameObject _currentComponent;
 
@@ -13,12 +13,12 @@ public class DoubleEnded {
         _currentComponent = currentComponent;
     }
 
-	public void SetPreviousComponent(GameObject prevComponent)
+	public void SetPreviousComponent(List<GameObject> prevComponent)
     {
         _prevComponent = prevComponent;
     }
 
-    public GameObject GetPreviousComponent()
+    public List<GameObject> GetPreviousComponent()
     {
         return _prevComponent;
     }
