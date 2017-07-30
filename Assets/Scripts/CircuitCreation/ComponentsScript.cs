@@ -34,6 +34,10 @@ public class ComponentsScript : MonoBehaviour {
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
             {
+                List<GameObject> va = CircuitHandler.GetDoubledEndedObject(gameObject).GetNextComponent();
+                Debug.Log(va.Count);
+
+
                 if (CircuitHandler.selected1 == null)
                 {
                     CircuitHandler.selected1 = gameObject;

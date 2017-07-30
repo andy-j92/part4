@@ -49,7 +49,7 @@ public class LoadRandomCircuit : MonoBehaviour {
                 component.transform.localScale = scale;
                 component.transform.localRotation = rotation;
 
-                if (position.x == -7 && position.y == 2 && position.z == 0)
+                if (position.x == -7 && position.y == 3 && position.z == 0)
                 {
                     component.tag = "StartingNode";
                 }

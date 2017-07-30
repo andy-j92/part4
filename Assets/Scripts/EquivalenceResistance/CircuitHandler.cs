@@ -135,8 +135,8 @@ public class CircuitHandler : MonoBehaviour {
             var deComponent1 = GetDoubledEndedObject(selected1);
             var deComponent2 = GetDoubledEndedObject(selected2);
 
-            Debug.Log(CheckSeries(deComponent1, deComponent2));
-
+            if (CheckSeries(deComponent1, deComponent2) || CheckSeries(deComponent2, deComponent1))
+                TransformHandler.TransformSeries(selected1, selected2);
         }
     }
 
@@ -155,50 +155,23 @@ public class CircuitHandler : MonoBehaviour {
     bool CheckSeries(DoubleEnded component1, DoubleEnded component2)
     {
         var nextComp1 = component1.GetNextComponent();
-        var nextComp2 = component2.GetNextComponent();
 
-        if (nextComp1.Count > 1 || nextComp2.Count > 1 || nextComp1 == null || nextComp2 == null)
+        if (nextComp1.Count > 1 || nextComp1.Count <= 0)
             return false;
-        //else if (component1.GetPreviousComponent().tag == component2.GetCurrentComponent().tag || component2.GetPreviousComponent().tag == component1.GetCurrentComponent().tag)
-        //{
-        //    return true;
-        //}
-        else if(nextComp1.Count == 1)
+        else if (nextComp1.Count == 1 && nextComp1[0].tag == "Resistor" && nextComp1[0] == component2.GetCurrentComponent())
+            return true;
+        else
         {
-            var next1 = nextComp1[0];
-            var next2 = nextComp2[0];
-            if (next1.tag == "Node" && nextComp2.Count == 1 && next2.tag == "Node")
+            while (nextComp1.Count == 1)
             {
-                while(next2.tag == "Node")
-                {
-                    var comp = GetDoubledEndedObject(next2);
-                    if(comp.GetNextComponent().Count == 1)
-                    {
-                        next2 = comp.GetNextComponent()[0];
-                    }
-                    if (next1 == next2)
-                        return true;
-                }
+                var component = GetDoubledEndedObject(nextComp1[0]);
+                if (component.GetCurrentComponent().tag == "Resistor" && component.GetCurrentComponent() == component2.GetCurrentComponent())
+                    return true;
+                else
+                    nextComp1 = component.GetNextComponent();
             }
         }
-        else if(nextComp2.Count == 1)
-        {
-            var next1 = nextComp1[0];
-            var next2 = nextComp2[0];
-            if (next1.tag == "Node" && nextComp1.Count == 1 && next2.tag == "Node")
-            {
-                while (next2.tag == "Node")
-                {
-                    var comp = GetDoubledEndedObject(next1);
-                    if (comp.GetNextComponent().Count == 1)
-                    {
-                        next1 = comp.GetNextComponent()[0];
-                    }
-                    if (next1 == next2)
-                        return true;
-                }
-            }
-        }
+
         return false;
     }
 
