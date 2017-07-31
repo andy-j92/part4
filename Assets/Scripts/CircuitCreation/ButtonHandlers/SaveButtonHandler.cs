@@ -12,10 +12,12 @@ public class SaveButtonHandler : MonoBehaviour {
     private GameObject filenameInput;
     private GameObject succesful;
     private StringBuilder sb;
+    public static int count;
     
 
     void Start()
     {
+        count = 0;
         sb = new StringBuilder();
         filenameInput = GameObject.FindGameObjectWithTag("FilenameInput");
         warning = GameObject.FindGameObjectWithTag("Warning");
@@ -41,14 +43,14 @@ public class SaveButtonHandler : MonoBehaviour {
         saveModal.SetActive(false);
     }
 
-	public void SaveCircuit()
+    public void SaveCircuit()
     {
-        
+
         var filename = filenameInput.GetComponent<InputField>().text;
 
         foreach (GameObject component in ConnectionHandler.circuitComponents)
         {
-            if(component.tag.Equals("Resistor"))
+            if (component.tag.Equals("Resistor"))
             {
                 sb.Append("Resistor ");
             }
@@ -64,7 +66,7 @@ public class SaveButtonHandler : MonoBehaviour {
         }
 
         CreateAndWriteToFile(filename);
-
+        sb = new StringBuilder();
     }
 
     void AppendContents(GameObject component)
