@@ -227,7 +227,7 @@ public class CircuitHandler : MonoBehaviour {
     {
         foreach (var key in connectedComponents.Keys)
         {
-            if (key.tag != "Resistor")
+            if (key != null && key.tag != "Resistor")
             {
                 key.GetComponent<BoxCollider2D>().enabled = false;
                 foreach (var child in key.GetComponentsInChildren<BoxCollider2D>())
