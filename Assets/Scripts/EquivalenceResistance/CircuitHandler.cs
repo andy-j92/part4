@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CircuitHandler : MonoBehaviour {
 
@@ -120,10 +121,6 @@ public class CircuitHandler : MonoBehaviour {
     {
         if (selected1 != null && selected2 != null)
         {
-            Debug.Log(selected1.GetCurrentComponent().GetInstanceID());
-            Debug.Log(selected2.GetCurrentComponent().GetInstanceID());
-
-
             if (CheckSeries(selected1, selected2) != null)
             {
                 TransformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent(), CheckSeries(selected1, selected2));
@@ -134,21 +131,11 @@ public class CircuitHandler : MonoBehaviour {
                 TransformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent(), CheckSeries(selected2, selected1));
                 selected1 = null;
             }
-        }
-
-
-    }
-
-    public static DoubleEnded GetDoubledEndedObject(GameObject component)
-    {
-        foreach (var item in componentOrder)
-        {
-            if (item.GetCurrentComponent() == component)
+            else
             {
-                return item;
+                StartCoroutine(ShowFeedBack("The Resistors are not in series."));
             }
         }
-        return null;
     }
 
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
@@ -157,19 +144,6 @@ public class CircuitHandler : MonoBehaviour {
 
         if (nextComp1.Count > 1 || nextComp1.Count <= 0)
             return null;
-        //else if (nextComp1.Count == 1 && nextComp1[0].tag == "Resistor" && nextComp1[0] == component2.GetCurrentComponent())
-        //    return component1.GetCurrentComponent();
-        //else
-        //{
-        //    while (nextComp1.Count == 1)
-        //    {
-        //        var component = GetDoubledEndedObject(nextComp1[0]);
-        //        if (component.GetCurrentComponent().tag == "Resistor" && component.GetCurrentComponent() == component2.GetCurrentComponent())
-        //            return component.GetCurrentComponent();
-        //        else
-        //            nextComp1 = component.GetNextComponent();
-        //    }
-        //}
         else if (nextComp1.Count == 1 && nextComp1.Contains(component2.GetCurrentComponent()))
             return component1.GetCurrentComponent();
         else
@@ -185,6 +159,65 @@ public class CircuitHandler : MonoBehaviour {
                     component = nextComp[0];
                     nextComp = GetDoubledEndedObject(component).GetNextComponent();
                 }
+            }
+        }
+        return null;
+    }
+
+    public void ParallelTransform()
+    {
+        if (selected1 != null && selected2 != null)
+        {
+            if (CheckParallel(selected1, selected2))
+            {
+                Debug.Log("here");
+                selected2 = null;
+            }
+            else if (CheckParallel(selected2, selected1))
+            {
+                Debug.Log("here");
+                selected1 = null;
+            }
+        }
+    }
+
+    bool CheckParallel(DoubleEnded component1, DoubleEnded component2)
+    {
+        GameObject prevNode = null;
+        GameObject nextNode = null;
+
+        var prevComp = component1.GetPreviousComponent();
+        var nextComp = component1.GetNextComponent();
+
+        foreach (var comp in prevComp)
+        {
+            if (comp.tag == "Resistor")
+                return false;
+            else if (comp.tag == "Node")
+                prevNode = comp;
+        }
+
+        foreach (var comp in nextComp)
+        {
+            if (comp.tag == "Resistor")
+                return false;
+            else if (comp.tag == "Node")
+                nextNode = comp;
+        }
+
+        if (component2.GetPreviousComponent().Contains(prevNode) && component2.GetNextComponent().Contains(nextNode))
+            return true;
+
+        return false;
+    }
+
+    public static DoubleEnded GetDoubledEndedObject(GameObject component)
+    {
+        foreach (var item in componentOrder)
+        {
+            if (item.GetCurrentComponent() == component)
+            {
+                return item;
             }
         }
         return null;
@@ -206,5 +239,12 @@ public class CircuitHandler : MonoBehaviour {
 
     }
 
+    IEnumerator ShowFeedBack(string feedbackText)
+    {
+        var feedback = GameObject.FindGameObjectWithTag("Warning");
+        feedback.GetComponent<Text>().text = feedbackText;
+        yield return new WaitForSeconds(2);
+        feedback.GetComponent<Text>().text = "";
 
+    }
 }
