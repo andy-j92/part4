@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3ce71d45e27ce9c4ea4f0e7304d0b085
-timeCreated: 1500897989
+guid: 2b105a4d8e788f84cb01b7b84e94fdb3
+timeCreated: 1494573589
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: TRANS_1
+    21300000: PIXILART-LOCAL (3)_0
     21300002: PIXILART-LOCAL (3)_1
     21300004: PIXILART-LOCAL (3)_2
     21300006: PIXILART-LOCAL (3)_3
@@ -48,7 +48,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 10
+  spritePixelsToUnits: 20
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -74,14 +74,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: iPhone
-    maxTextureSize: 2048
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
   - buildTarget: Android
     maxTextureSize: 2048
     textureFormat: -1
@@ -94,7 +86,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TRANS_1
+      name: PIXILART-LOCAL (3)_0
       rect:
         serializedVersion: 2
         x: 24
