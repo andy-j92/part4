@@ -123,6 +123,15 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             Destroy(component);
         }
+
+        var wires = GameObject.FindGameObjectsWithTag("Wire");
+        foreach (var wire in wires)
+        {
+            Destroy(wire);
+        }
+
+        CircuitHandler.selected1 = null;
+        CircuitHandler.selected2 = null;
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
         Start();
