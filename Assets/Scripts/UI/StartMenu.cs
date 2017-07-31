@@ -8,6 +8,7 @@ public class StartMenu: MonoBehaviour
 	public Transform optionMenu,music_on,music_off,sound_on,sound_off, music_volume, sound_volume;
 	bool m_state = true;
 	bool s_state = true;
+	bool setting = true;
 
 	//AudioSource bgm;
 	//float bgm_volume = 1.0f;
@@ -17,23 +18,21 @@ public class StartMenu: MonoBehaviour
 		SceneManager.LoadScene ("GameMenu");
 	}
 
-	public void OptionMenu(bool clicked)
+	public void HelpMenu (string name)
 	{
-		if (clicked == true) 
-		{
-			optionMenu.gameObject.SetActive (clicked);
-			music_on.gameObject.SetActive (m_state);
-			music_off.gameObject.SetActive (!m_state);
-			sound_on.gameObject.SetActive (s_state);
-			sound_off.gameObject.SetActive (!s_state);
+		SceneManager.LoadScene ("HelpScreen");
+	}
+
+	public void OptionMenu()
+	{
+		setting = !setting;
+		optionMenu.gameObject.SetActive (setting);
+		music_on.gameObject.SetActive (m_state);
+		music_off.gameObject.SetActive (!m_state);
+		sound_on.gameObject.SetActive (s_state);
+		sound_off.gameObject.SetActive (!s_state);
 			//bgm = GetComponent<AudioSource>();
 			//bgm.volume = bgm_volume;
-		}
-
-		else
-		{
-			optionMenu.gameObject.SetActive(clicked);
-		}
 
 	}
 

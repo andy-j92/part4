@@ -19,7 +19,7 @@ public class GameMenu: MonoBehaviour
 			SceneManager.LoadScene ("CircuitCreator");
 		}
 
-	public void Start (string name)
+	public void Startscreen (string name)
 	{
 		SceneManager.LoadScene ("Startscreen");
 	}
