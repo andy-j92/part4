@@ -34,15 +34,23 @@ public class ComponentsScript : MonoBehaviour {
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
             {
+                List<GameObject> va = CircuitHandler.GetDoubledEndedObject(gameObject).GetNextComponent();
+                Debug.Log("Current: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetCurrentComponent().GetInstanceID());
+                Debug.Log("Prev: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetPreviousComponent()[0].GetInstanceID());
+                foreach (var item in va)
+                {
+                    Debug.Log(item.GetInstanceID());
+                }
+
                 if (CircuitHandler.selected1 == null)
                 {
-                    CircuitHandler.selected1 = gameObject;
+                    CircuitHandler.selected1 = CircuitHandler.GetDoubledEndedObject(gameObject);
                     isSelected = true;
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
                 }
                 else if (CircuitHandler.selected2 == null)
                 {
-                    CircuitHandler.selected2 = gameObject;
+                    CircuitHandler.selected2 = CircuitHandler.GetDoubledEndedObject(gameObject);
                     isSelected = true;
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0, 1);
                 }
@@ -65,9 +73,9 @@ public class ComponentsScript : MonoBehaviour {
         {
             isSelected = false;
 
-            if (CircuitHandler.selected1 == gameObject)
+            if (CircuitHandler.selected1.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected1 = null;
-            else if (CircuitHandler.selected2 == gameObject)
+            else if (CircuitHandler.selected2.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected2 = null;
             
             if (gameObject.tag.Equals("Wire"))
@@ -112,33 +120,3 @@ public class ComponentsScript : MonoBehaviour {
         }
     }
 }
-
-//if (!components.Contains(collider.gameObject))
-//            {
-//                if (collider.gameObject.tag == "Collider" || collider.gameObject.tag == "Wire")
-//                {
-//                    var parent = collider.gameObject.transform.parent;
-//                    if (parent != null && !components.Contains(parent.gameObject))
-//                    {
-//                        components.Add(parent.gameObject);
-//                    }
-//                    else if(parent == null && !components.Contains(collider.gameObject))
-//                    {
-//                        components.Add(collider.gameObject);
-//                    }
-//                }
-//                else if (!components.Contains(collider.gameObject))
-//                {
-//                    components.Add(collider.gameObject);
-//                }
-//            }
-
-//            if (CircuitHandler.connectedComponents.ContainsKey(gameObject))
-//            {
-//                CircuitHandler.connectedComponents.Remove(gameObject);
-//                CircuitHandler.connectedComponents.Add(gameObject, components);
-//            }
-//            else
-//            {
-//                CircuitHandler.connectedComponents.Add(gameObject, components);
-//            }

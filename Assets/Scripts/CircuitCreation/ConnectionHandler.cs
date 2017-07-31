@@ -49,15 +49,16 @@ public class ConnectionHandler : MonoBehaviour {
     void ConnectComponents(GameObject connector1, GameObject connector2)
     {
         var pos1 = connector1.transform.position;
-        var wirePos = new Vector3(pos1.x, pos1.y, 1);
+        //var wirePos = new Vector3(pos1.x, pos1.y, 1);
+        var wirePos = (connector1.transform.position + connector2.transform.position)/2;
         var parentTag1 = connector1.transform.parent.gameObject.tag;
         var parentTag2 = connector2.transform.parent.gameObject.tag;
         var pos2 = connector2.transform.position;
         var xDiff = Mathf.Round(pos1.x - pos2.x);
         var yDiff = Mathf.Round(pos1.y - pos2.y);
 
-        if (isNode(parentTag1))
-            wirePos -= connector1.transform.localPosition;
+        //if (isNode(parentTag1))
+        //    wirePos -= connector1.transform.localPosition;
         
         if(xDiff < 0)
         {

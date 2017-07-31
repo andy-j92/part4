@@ -14,6 +14,7 @@ public class LoadRandomCircuit : MonoBehaviour {
     {
         var circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         var index = Random.Range(0, circuits.Length);
+        TransformHandler.SetWireObject(wire);
         StartCoroutine(DrawCircuit(circuits[index]));
     }
 
@@ -49,7 +50,7 @@ public class LoadRandomCircuit : MonoBehaviour {
                 component.transform.localScale = scale;
                 component.transform.localRotation = rotation;
 
-                if (position.x == -7 && position.y == 2 && position.z == 0)
+                if (position.x == -7 && position.y == 3 && position.z == 0)
                 {
                     component.tag = "StartingNode";
                 }
