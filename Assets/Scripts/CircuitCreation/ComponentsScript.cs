@@ -39,7 +39,7 @@ public class ComponentsScript : MonoBehaviour {
                 Debug.Log("Prev: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetPreviousComponent()[0].GetInstanceID());
                 foreach (var item in va)
                 {
-                    Debug.Log(item.GetInstanceID());
+                    Debug.Log("Next: " + item.GetInstanceID());
                 }
 
                 if (CircuitHandler.selected1 == null)

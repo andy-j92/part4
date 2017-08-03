@@ -189,24 +189,15 @@ public class CircuitHandler : MonoBehaviour {
         var prevComp = component1.GetPreviousComponent();
         var nextComp = component1.GetNextComponent();
 
-        foreach (var comp in prevComp)
+        if (nextComp.Contains(component2.GetCurrentComponent()) && component2.GetPreviousComponent()[0] == component1.GetCurrentComponent())
         {
-            if (comp.tag == "Resistor")
-                return false;
-            else if (comp.tag == "Node")
-                prevNode = comp;
-        }
-
-        foreach (var comp in nextComp)
-        {
-            if (comp.tag == "Resistor")
-                return false;
-            else if (comp.tag == "Node")
-                nextNode = comp;
-        }
-
-        if (component2.GetPreviousComponent().Contains(prevNode) && component2.GetNextComponent().Contains(nextNode))
             return true;
+        }
+        else if()
+        {
+
+        }
+            
 
         return false;
     }
