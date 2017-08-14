@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 public class TransformHandler : MonoBehaviour {
 
-    public GameObject action;
+   // public GameObject action;
 
-    private  GameObject _wire;
-    
-	public  void TransformSeries(GameObject resistor1, GameObject resistor2, GameObject comp)
+    private  static GameObject _wire;
+
+	public static void TransformSeries(GameObject resistor1, GameObject resistor2, GameObject comp)
     {
         var deComp1 = CircuitHandler.GetDoubledEndedObject(comp);
         var deComp2 = CircuitHandler.GetDoubledEndedObject(resistor2);
@@ -26,9 +26,9 @@ public class TransformHandler : MonoBehaviour {
         var actionText = "Series Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
             ") and R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
-        var newAction = Instantiate(action);
-        newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
-        newAction.GetComponent<Text>().text = actionText;
+        //var newAction = Instantiate(action);
+        //newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
+        //newAction.GetComponent<Text>().text = actionText;
 
 
         var newWire = Instantiate(_wire);
@@ -40,7 +40,7 @@ public class TransformHandler : MonoBehaviour {
         TransformComplete();
     }
 
-    string CalculateSeriesResistance(GameObject comp1, GameObject comp2)
+    static string CalculateSeriesResistance(GameObject comp1, GameObject comp2)
     {
         int resistance1 = 0;
         int resistance2 = 0;
@@ -49,7 +49,7 @@ public class TransformHandler : MonoBehaviour {
         return (resistance1 + resistance2).ToString();
     }
 
-    string CalculateParallelResistance(GameObject comp1, GameObject comp2)
+    static string CalculateParallelResistance(GameObject comp1, GameObject comp2)
     {
         int resistance1 = 0;
         int resistance2 = 0;
@@ -58,7 +58,7 @@ public class TransformHandler : MonoBehaviour {
         return ((resistance1 + resistance2)/2).ToString();
     }
 
-    public void TransformParallel(GameObject resistor1, GameObject resistor2)
+    public static void TransformParallel(GameObject resistor1, GameObject resistor2)
     {
         var deComp1 = CircuitHandler.GetDoubledEndedObject(resistor1);
         var deComp2 = CircuitHandler.GetDoubledEndedObject(resistor2);
@@ -106,7 +106,7 @@ public class TransformHandler : MonoBehaviour {
         TransformComplete();
     }
 
-    void  TransformComplete()
+    static void  TransformComplete()
     {
         CircuitHandler.selected1.GetCurrentComponent().GetComponentInChildren<SpriteRenderer>().color = Color.white;
         CircuitHandler.selected2.GetCurrentComponent().GetComponentInChildren<SpriteRenderer>().color = Color.white;
@@ -114,7 +114,7 @@ public class TransformHandler : MonoBehaviour {
         CircuitHandler.selected2 = null;
     }
 
-    public void SetWireObject(GameObject wire)
+    public static void SetWireObject(GameObject wire)
     {
         _wire = wire;
     }

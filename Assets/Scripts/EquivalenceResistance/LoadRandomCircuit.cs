@@ -14,7 +14,7 @@ public class LoadRandomCircuit : MonoBehaviour {
     {
         var circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         var index = Random.Range(0, circuits.Length);
-        new TransformHandler().SetWireObject(wire);
+        TransformHandler.SetWireObject(wire);
         StartCoroutine(DrawCircuit(circuits[index]));
     }
 

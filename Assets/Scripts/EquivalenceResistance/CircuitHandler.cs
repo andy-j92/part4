@@ -16,14 +16,12 @@ public class CircuitHandler : MonoBehaviour {
     public static Dictionary<GameObject, List<GameObject>> connectedComponents = new Dictionary<GameObject, List<GameObject>>();
     private Queue<GameObject> connectionQueue = new Queue<GameObject>();
     private List<GameObject> processedComponents = new List<GameObject>();
-    private TransformHandler transformHandler = new TransformHandler();
 
     public static DoubleEnded selected1;
     public static DoubleEnded selected2;
 
     public void StartSetUp()
     {
-        TransformHandler transformHandler = new TransformHandler();
         var startingComp = GameObject.FindGameObjectWithTag("StartingNode");
         connectionQueue.Enqueue(startingComp);
         while (connectionQueue.Count > 0)
@@ -144,11 +142,11 @@ public class CircuitHandler : MonoBehaviour {
         {
             if (CheckSeries(selected1, selected2) != null)
             {
-                transformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent(), CheckSeries(selected1, selected2));
+                TransformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent(), CheckSeries(selected1, selected2));
             }
             else if (CheckSeries(selected2, selected1) != null)
             {
-                transformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent(), CheckSeries(selected2, selected1));
+                TransformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent(), CheckSeries(selected2, selected1));
             }
             else
             {
@@ -192,11 +190,11 @@ public class CircuitHandler : MonoBehaviour {
         {
             if (CheckParallel(selected1, selected2))
             {
-                transformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
+                TransformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
             }
             else if (CheckParallel(selected2, selected1))
             {
-                transformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
+                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
         }
     }
