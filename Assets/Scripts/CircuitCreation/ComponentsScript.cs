@@ -35,8 +35,13 @@ public class ComponentsScript : MonoBehaviour {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
             {
                 List<GameObject> va = CircuitHandler.GetDoubledEndedObject(gameObject).GetNextComponent();
+                List<GameObject> ca = CircuitHandler.GetDoubledEndedObject(gameObject).GetPreviousComponent();
+
                 Debug.Log("Current: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetCurrentComponent().GetInstanceID());
-                Debug.Log("Prev: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetPreviousComponent()[0].GetInstanceID());
+                foreach (var item in ca)
+                {
+                    Debug.Log("Prev: " + item.GetInstanceID());
+                }
                 foreach (var item in va)
                 {
                     Debug.Log("Next: " + item.GetInstanceID());
@@ -73,15 +78,15 @@ public class ComponentsScript : MonoBehaviour {
         {
             isSelected = false;
 
-            if (CircuitHandler.selected1.GetCurrentComponent() == gameObject)
-                CircuitHandler.selected1 = null;
-            else if (CircuitHandler.selected2.GetCurrentComponent() == gameObject)
-                CircuitHandler.selected2 = null;
-            
             if (gameObject.tag.Equals("Wire"))
                 gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
             else
                 gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+ 
+            if (CircuitHandler.selected1.GetCurrentComponent() == gameObject)
+                CircuitHandler.selected1 = null;
+            else if (CircuitHandler.selected2.GetCurrentComponent() == gameObject)
+                CircuitHandler.selected2 = null;
         }
         
     }
