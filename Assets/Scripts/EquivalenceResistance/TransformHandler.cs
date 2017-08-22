@@ -9,16 +9,19 @@ public class TransformHandler : MonoBehaviour {
 
     private  static GameObject _wire;
 
-	public static void TransformSeries(GameObject resistor1, GameObject resistor2, GameObject comp)
+	public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
-        var deComp1 = CircuitHandler.GetDoubledEndedObject(comp);
+        var deComp1 = CircuitHandler.GetDoubledEndedObject(resistor1);
         var deComp2 = CircuitHandler.GetDoubledEndedObject(resistor2);
+        Debug.Log(resistor2);
+        Debug.Log(deComp2);
+        Debug.Log(deComp2.GetNextComponent().Count);
         var deComp3 = CircuitHandler.GetDoubledEndedObject(deComp2.GetNextComponent()[0]);
 
         deComp1.GetNextComponent().Remove(resistor2);
         deComp1.GetNextComponent().Add(deComp3.GetCurrentComponent());
         deComp3.GetPreviousComponent().Remove(resistor2);
-        deComp3.GetPreviousComponent().Add(comp);
+        deComp3.GetPreviousComponent().Add(resistor1);
 
         var rotation = resistor2.transform.rotation;
         var position = resistor2.transform.position;

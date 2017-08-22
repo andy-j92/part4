@@ -141,11 +141,11 @@ public class CircuitHandler : MonoBehaviour {
         {
             if (CheckSeries(selected1, selected2) != null)
             {
-                TransformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent(), CheckSeries(selected1, selected2));
+                TransformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
             }
             else if (CheckSeries(selected2, selected1) != null)
             {
-                TransformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent(), CheckSeries(selected2, selected1));
+                TransformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
             else
             {
@@ -159,12 +159,26 @@ public class CircuitHandler : MonoBehaviour {
         var nextComp1 = component1.GetNextComponent();
         var prevComp1 = component2.GetPreviousComponent();
 
+        Debug.Log("check");
+
         if (nextComp1.Count != 1)
+        {
+            Debug.Log("check2");
             return null;
-        else if (nextComp1.Count == 1 && nextComp1.Contains(component2.GetCurrentComponent()))
-            return component1.GetCurrentComponent();
-        else if (nextComp1.Count == 1 && GetDoubledEndedObject(nextComp1[0]).GetPreviousComponent().Contains(component2.GetCurrentComponent()))
-            return component1.GetCurrentComponent();
+        }
+        else if (nextComp1.Count == 1 )
+        {
+            Debug.Log(GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Count);
+            Debug.Log(component2.GetCurrentComponent().GetInstanceID());
+            if (nextComp1.Contains(component2.GetCurrentComponent()))
+                return component1.GetCurrentComponent();
+            else if (GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Contains(component2.GetCurrentComponent()))
+                return component1.GetCurrentComponent();
+            else if (component2.GetNextComponent().Count == 1 && component2.GetNextComponent()[0] == nextComp1[0])
+            {
+                return component1.GetCurrentComponent();
+            }
+        }
         else
         {
             var component = component1.GetNextComponent()[0];
@@ -262,13 +276,19 @@ public class CircuitHandler : MonoBehaviour {
                 foreach (var item in prevNode1.GetNextComponent())
                 {
                     if (item.tag == "Node")
-                        nextNode = GetDoubledEndedObject(item);
-                }
-
-                if(nextNode != null && nextNode.GetNextComponent().Count == 1)
-                {
-                    if (nextNode.GetNextComponent()[0] = prevNode2)
                     {
+                        nextNode = GetDoubledEndedObject(item);
+                    }
+                }
+                if (nextNode != null && nextNode.GetNextComponent().Count == 1)
+                {
+                    var nextNextNode = nextNode.GetNextComponent()[0];
+                    Debug.Log("heredfere");
+                    if (nextNextNode.tag != "Node")
+                        return false;
+                    else if (GetDoubledEndedObject(nextNextNode).GetPreviousComponent().Contains(nextNode.GetCurrentComponent()))
+                    {
+                        Debug.Log("heredfere");
                         return true;
                     }
                 }

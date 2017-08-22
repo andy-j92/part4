@@ -82,7 +82,7 @@ public class ComponentsScript : MonoBehaviour {
             else
                 gameObject.GetComponent<SpriteRenderer>().color = Color.white;
  
-            if (CircuitHandler.selected1.GetCurrentComponent() == gameObject)
+            if (CircuitHandler.selected1 != null && CircuitHandler.selected1.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected1 = null;
             else if (CircuitHandler.selected2.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected2 = null;
