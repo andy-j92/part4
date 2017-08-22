@@ -124,4 +124,9 @@ public class ComponentsScript : MonoBehaviour {
             }
         }
     }
+
+    public void SetIsSelected(bool boolean)
+    {
+        isSelected = boolean;
+    }
 }
