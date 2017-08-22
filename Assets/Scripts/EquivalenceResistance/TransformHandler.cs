@@ -37,7 +37,7 @@ public class TransformHandler : MonoBehaviour {
         newWire.transform.rotation = rotation;
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
         Destroy(resistor2);
-        TransformComplete(resistor1, resistor2);
+        TransformComplete();
     }
 
     static string CalculateSeriesResistance(GameObject comp1, GameObject comp2)
@@ -99,16 +99,15 @@ public class TransformHandler : MonoBehaviour {
         {
             CircuitHandler.wires.Remove(item);
         }
+        Debug.Log(CircuitHandler.wires.Count);
         Destroy(resistor1);
 
         resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-        TransformComplete(resistor1, resistor2);
+        TransformComplete();
     }
 
-    static void  TransformComplete(GameObject resistor1, GameObject resistor2)
+    static void  TransformComplete()
     {
-        resistor1.GetComponent<ComponentsScript>().SetIsSelected(false);
-        resistor2.GetComponent<ComponentsScript>().SetIsSelected(false);
         CircuitHandler.selected1.GetCurrentComponent().GetComponentInChildren<SpriteRenderer>().color = Color.white;
         CircuitHandler.selected2.GetCurrentComponent().GetComponentInChildren<SpriteRenderer>().color = Color.white;
         CircuitHandler.selected1 = null;

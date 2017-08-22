@@ -35,6 +35,7 @@ public class CircuitHandler : MonoBehaviour {
         }
         DisableColliders();
         SetPreviousLink();
+        Debug.Log(wires.Count);
     }
 
     public void SetPreviousLink()
