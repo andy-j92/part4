@@ -134,6 +134,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.selected2 = null;
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
+        CircuitHandler.wires = new List<Wire>();
         Start();
 
     }
