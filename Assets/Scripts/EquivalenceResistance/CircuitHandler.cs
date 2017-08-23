@@ -240,8 +240,8 @@ public class CircuitHandler : MonoBehaviour {
         var nextComp2 = component2.GetNextComponent();
 
         DoubleEnded prevNode1 = null;
-        GameObject nextNode1 = null;
-        GameObject prevNode2 = null;
+        DoubleEnded nextNode1 = null;
+        DoubleEnded prevNode2 = null;
         DoubleEnded nextNode2 = null;
 
         foreach (var prev in prevComp1)
@@ -252,12 +252,12 @@ public class CircuitHandler : MonoBehaviour {
         foreach (var next in nextComp1)
         {
             if (next.tag == "Node")
-                nextNode1 = next;
+                nextNode1 = GetDoubledEndedObject(next);
         }
         foreach (var prev in prevComp2)
         {
             if (prev.tag == "Node")
-                prevNode2 = prev;
+                prevNode2 = GetDoubledEndedObject(prev);
         }
         foreach (var next in nextComp2)
         {
@@ -272,7 +272,11 @@ public class CircuitHandler : MonoBehaviour {
         else if(prevNode1.GetNextComponent().Count > 1)
         {
             //R w R w case
-            if(prevNode1.GetNextComponent().Contains(prevNode2) && nextNode2.GetPreviousComponent().Contains(nextNode1))
+            if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode2.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
+            {
+                return true;
+            }
+            else if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode1.GetNextComponent().Contains(nextNode2.GetCurrentComponent()))
             {
                 return true;
             }
@@ -283,14 +287,14 @@ public class CircuitHandler : MonoBehaviour {
                 if(nextNode2.GetNextComponent().Count == 1 && nextNode2.GetNextComponent()[0].tag == "Node")
                 {
                     nextNode = GetDoubledEndedObject(nextNode2.GetNextComponent()[0]);
-                     if (nextNode.GetPreviousComponent().Count != 0 && nextNode.GetPreviousComponent().Contains(nextNode1))
+                    if (nextNode.GetPreviousComponent().Count != 0 && nextNode.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
                     {
                         return true;
                     }
                 }
             }
             //R w w R case
-            else if (GetDoubledEndedObject(nextNode1).GetNextComponent().Contains(component2.GetCurrentComponent()))
+            else if (nextNode1.GetNextComponent().Contains(component2.GetCurrentComponent()))
             {
                 DoubleEnded nextNode = null;
                 foreach (var item in prevNode1.GetNextComponent())

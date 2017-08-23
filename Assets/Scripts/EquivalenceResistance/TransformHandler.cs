@@ -13,19 +13,27 @@ public class TransformHandler : MonoBehaviour {
     {
         var deResistor1 = CircuitHandler.GetDoubledEndedObject(resistor1);
         var deResistor2 = CircuitHandler.GetDoubledEndedObject(resistor2);
-
         //Components in series can only have a single previous component
         var prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
-        //Components in series can only have a single next component
-        var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
-        //var deComp3 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
 
-        prevComp2.GetNextComponent().Remove(resistor2);
-        prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
-        //deComp1.GetNextComponent().Remove(resistor2);
-        //deComp1.GetNextComponent().Add(deComp3.GetCurrentComponent());
-        //deComp3.GetPreviousComponent().Remove(resistor2);
-        //deComp3.GetPreviousComponent().Add(resistor1);
+        if(deResistor2.GetNextComponent().Count == 0)
+        {
+            var nextComp1 = CircuitHandler.GetDoubledEndedObject(deResistor1.GetNextComponent()[0]);
+            nextComp1.GetNextComponent().Remove(resistor2);
+            deResistor2.GetPreviousComponent().Remove(nextComp1.GetCurrentComponent());
+            nextComp1.GetPreviousComponent().Add(deResistor2.GetPreviousComponent()[0]);
+
+            var prevNode2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+            prevNode2.GetNextComponent().Remove(resistor2);
+            prevNode2.GetNextComponent().Add(nextComp1.GetCurrentComponent());
+        }
+        else
+        {
+            var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
+            prevComp2.GetNextComponent().Remove(resistor2);
+            prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
+        }
+        
 
         var rotation = resistor2.transform.rotation;
         var position = resistor2.transform.position;
