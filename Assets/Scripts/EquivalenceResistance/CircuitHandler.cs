@@ -157,19 +157,24 @@ public class CircuitHandler : MonoBehaviour {
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
     {
         var nextComp1 = component1.GetNextComponent();
-        var prevComp1 = component2.GetPreviousComponent();
+        var prevComp1 = component1.GetPreviousComponent();
+        var prevComp2 = component2.GetPreviousComponent();
+        GameObject prevNode = null;
 
-        Debug.Log("check");
-
-        if (nextComp1.Count != 1)
+        foreach (var item in prevComp1)
         {
-            Debug.Log("check2");
+            if (item.tag == "Node")
+                prevNode = item;
+        }
+
+        Debug.Log(prevNode.GetInstanceID());
+
+        if (nextComp1.Count != 1 || GetDoubledEndedObject(prevNode).GetNextComponent().Count != 1)
+        {
             return null;
         }
         else if (nextComp1.Count == 1 )
         {
-            Debug.Log(GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Count);
-            Debug.Log(component2.GetCurrentComponent().GetInstanceID());
             if (nextComp1.Contains(component2.GetCurrentComponent()))
                 return component1.GetCurrentComponent();
             else if (GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Contains(component2.GetCurrentComponent()))
