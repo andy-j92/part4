@@ -229,6 +229,10 @@ public class CircuitHandler : MonoBehaviour {
             {
                 TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
+            else
+            {
+                StartCoroutine(ShowFeedBack("The Resistors are not in parallel."));
+            }
         }
     }
 
@@ -265,11 +269,11 @@ public class CircuitHandler : MonoBehaviour {
                 nextNode2 = GetDoubledEndedObject(next);
         }
 
-        if (nextComp1.Contains(component2.GetCurrentComponent()) && component2.GetPreviousComponent()[0] == component1.GetCurrentComponent())
+        if (nextComp1.Contains(component2.GetCurrentComponent()) && component2.GetPreviousComponent()[0] == component1.GetCurrentComponent() && component2.GetNextComponent().Count == 0)
         {
             return true;
         }
-        else if(prevNode1.GetNextComponent().Count > 1)
+        else if(prevNode1 != null && prevNode1.GetNextComponent().Count > 1)
         {
             //R w R w case
             if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode2.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
@@ -294,7 +298,8 @@ public class CircuitHandler : MonoBehaviour {
                 }
             }
             //R w w R case
-            else if (nextNode1.GetNextComponent().Contains(component2.GetCurrentComponent()))
+            //else if (nextNode1.GetNextComponent().Contains(component2.GetCurrentComponent()))
+            else
             {
                 DoubleEnded nextNode = null;
                 foreach (var item in prevNode1.GetNextComponent())
@@ -307,18 +312,15 @@ public class CircuitHandler : MonoBehaviour {
                 if (nextNode != null && nextNode.GetNextComponent().Count == 1)
                 {
                     var nextNextNode = nextNode.GetNextComponent()[0];
-                    Debug.Log("heredfere");
                     if (nextNextNode.tag != "Node")
                         return false;
                     else if (GetDoubledEndedObject(nextNextNode).GetPreviousComponent().Contains(nextNode.GetCurrentComponent()))
                     {
-                        Debug.Log("heredfere");
                         return true;
                     }
                 }
             }
         }
-        
 
         return false;
     }
