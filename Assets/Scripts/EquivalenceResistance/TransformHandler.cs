@@ -11,17 +11,21 @@ public class TransformHandler : MonoBehaviour {
 
 	public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
-        var deComp1 = CircuitHandler.GetDoubledEndedObject(resistor1);
-        var deComp2 = CircuitHandler.GetDoubledEndedObject(resistor2);
-        Debug.Log(resistor2);
-        Debug.Log(deComp2);
-        Debug.Log(deComp2.GetNextComponent().Count);
-        var deComp3 = CircuitHandler.GetDoubledEndedObject(deComp2.GetNextComponent()[0]);
+        var deResistor1 = CircuitHandler.GetDoubledEndedObject(resistor1);
+        var deResistor2 = CircuitHandler.GetDoubledEndedObject(resistor2);
 
-        deComp1.GetNextComponent().Remove(resistor2);
-        deComp1.GetNextComponent().Add(deComp3.GetCurrentComponent());
-        deComp3.GetPreviousComponent().Remove(resistor2);
-        deComp3.GetPreviousComponent().Add(resistor1);
+        //Components in series can only have a single previous component
+        var prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+        //Components in series can only have a single next component
+        var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
+        //var deComp3 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
+
+        prevComp2.GetNextComponent().Remove(resistor2);
+        prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
+        //deComp1.GetNextComponent().Remove(resistor2);
+        //deComp1.GetNextComponent().Add(deComp3.GetCurrentComponent());
+        //deComp3.GetPreviousComponent().Remove(resistor2);
+        //deComp3.GetPreviousComponent().Add(resistor1);
 
         var rotation = resistor2.transform.rotation;
         var position = resistor2.transform.position;

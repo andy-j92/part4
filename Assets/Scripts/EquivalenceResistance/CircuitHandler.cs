@@ -159,22 +159,22 @@ public class CircuitHandler : MonoBehaviour {
         var nextComp1 = component1.GetNextComponent();
         var prevComp1 = component1.GetPreviousComponent();
         var prevComp2 = component2.GetPreviousComponent();
-        GameObject prevNode = null;
 
+        GameObject prevNode = null;
         foreach (var item in prevComp1)
         {
             if (item.tag == "Node")
                 prevNode = item;
         }
 
-        Debug.Log(prevNode.GetInstanceID());
-
-        if (nextComp1.Count != 1 || GetDoubledEndedObject(prevNode).GetNextComponent().Count != 1)
-        {
+        if (nextComp1.Count != 1)
             return null;
-        }
+        else if (prevNode != null && GetDoubledEndedObject(prevNode).GetNextComponent().Count != 1)
+            return null;
         else if (nextComp1.Count == 1 )
         {
+            Debug.Log(nextComp1[0].GetInstanceID());
+            Debug.Log(component2.GetCurrentComponent().GetInstanceID());
             if (nextComp1.Contains(component2.GetCurrentComponent()))
                 return component1.GetCurrentComponent();
             else if (GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Contains(component2.GetCurrentComponent()))
@@ -182,6 +182,21 @@ public class CircuitHandler : MonoBehaviour {
             else if (component2.GetNextComponent().Count == 1 && component2.GetNextComponent()[0] == nextComp1[0])
             {
                 return component1.GetCurrentComponent();
+            }
+            else
+            {
+                var component = component1.GetNextComponent()[0];
+                var nextComp = GetDoubledEndedObject(component).GetNextComponent();
+                while (nextComp.Count == 1)
+                {
+                    if (nextComp.Contains(component2.GetCurrentComponent()))
+                        return component;
+                    else
+                    {
+                        component = nextComp[0];
+                        nextComp = GetDoubledEndedObject(component).GetNextComponent();
+                    }
+                }
             }
         }
         else
