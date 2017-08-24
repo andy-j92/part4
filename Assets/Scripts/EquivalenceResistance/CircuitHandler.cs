@@ -33,6 +33,8 @@ public class CircuitHandler : MonoBehaviour {
                 processedComponents.Add(component);
             }
         }
+        Debug.Log(wires.Count);
+
         DisableColliders();
         SetPreviousLink();
     }
@@ -91,12 +93,18 @@ public class CircuitHandler : MonoBehaviour {
                         foreach (var item in wireConnectedComp)
                         {
                             parent = item.transform.parent;
-                            if (parent != null && !nextComp.Contains(parent.gameObject) && parent.gameObject != component)
+                            if (parent != null && parent.gameObject != component)
                             {
-                                nextComp.Add(parent.gameObject);
-                                connectionQueue.Enqueue(parent.gameObject);
-
-                                if (!LinkExists(component, parent.gameObject))
+                                if(!nextComp.Contains(parent.gameObject))
+                                {
+                                    nextComp.Add(parent.gameObject);
+                                    connectionQueue.Enqueue(parent.gameObject);
+                                    if (!LinkExists(component, parent.gameObject))
+                                    {
+                                        wires.Add(new Wire(comp, component, parent.gameObject));
+                                    }
+                                }
+                                else
                                 {
                                     wires.Add(new Wire(comp, component, parent.gameObject));
                                 }
@@ -298,7 +306,6 @@ public class CircuitHandler : MonoBehaviour {
                 }
             }
             //R w w R case
-            //else if (nextNode1.GetNextComponent().Contains(component2.GetCurrentComponent()))
             else
             {
                 DoubleEnded nextNode = null;

@@ -37,13 +37,11 @@ public class ComponentsScript : MonoBehaviour {
 		
             foreach (var item in CircuitHandler.wires)
             {
-                Debug.Log(item.GetWireObject().GetInstanceID());
                 if(item.GetWireObject() == gameObject) {
+                    Debug.Log(item.GetWireObject().GetInstanceID());
                     Debug.Log(item.GetComponent1().GetInstanceID());
                     Debug.Log(item.GetComponent2().GetInstanceID());
                 }
-				Debug.Log(item.GetComponent1().GetInstanceID());
-				Debug.Log(item.GetComponent2().GetInstanceID());
             }
         }
 
