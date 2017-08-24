@@ -33,8 +33,6 @@ public class CircuitHandler : MonoBehaviour {
                 processedComponents.Add(component);
             }
         }
-        Debug.Log(wires.Count);
-
         DisableColliders();
         SetPreviousLink();
     }
