@@ -29,6 +29,24 @@ public class ComponentsScript : MonoBehaviour {
 
     void OnMouseOver()
     {
+        
+        if (Input.GetMouseButtonDown(0) && gameObject.tag == "Wire")
+        {
+			Debug.Log(gameObject.GetInstanceID());
+		    Debug.Log("\n");
+		
+            foreach (var item in CircuitHandler.wires)
+            {
+                Debug.Log(item.GetWireObject().GetInstanceID());
+                if(item.GetWireObject() == gameObject) {
+                    Debug.Log(item.GetComponent1().GetInstanceID());
+                    Debug.Log(item.GetComponent2().GetInstanceID());
+                }
+				Debug.Log(item.GetComponent1().GetInstanceID());
+				Debug.Log(item.GetComponent2().GetInstanceID());
+            }
+        }
+
         if (Input.GetMouseButtonDown(0) && !isSelected)
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
