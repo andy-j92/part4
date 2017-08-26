@@ -164,6 +164,7 @@ public class CircuitHandler : MonoBehaviour {
     {
         var nextComp1 = component1.GetNextComponent();
         var prevComp1 = component1.GetPreviousComponent();
+        var nextComp2 = component2.GetNextComponent();
         var prevComp2 = component2.GetPreviousComponent();
 
         GameObject prevNode = null;
@@ -179,16 +180,16 @@ public class CircuitHandler : MonoBehaviour {
             return null;
         else if (nextComp1.Count == 1 )
         {
-            Debug.Log(nextComp1[0].GetInstanceID());
-            Debug.Log(component2.GetCurrentComponent().GetInstanceID());
             if (nextComp1.Contains(component2.GetCurrentComponent()))
                 return component1.GetCurrentComponent();
             else if (GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Contains(component2.GetCurrentComponent()))
                 return component1.GetCurrentComponent();
-            else if (component2.GetNextComponent().Count == 1 && component2.GetNextComponent()[0] == nextComp1[0])
-            {
+            else if (nextComp2.Count == 1 && nextComp2[0] == prevComp1[0])
                 return component1.GetCurrentComponent();
-            }
+            else if (nextComp2.Count == 1 && nextComp2[0] == nextComp1[0])
+                return component1.GetCurrentComponent();
+            else if (prevComp2.Count == 1 && prevComp2[0] == nextComp1[0])
+                return component1.GetCurrentComponent();
             else
             {
                 var component = component1.GetNextComponent()[0];
