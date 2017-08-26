@@ -7,9 +7,11 @@ public class TransformHandler : MonoBehaviour {
 
    // public GameObject action;
 
-    private  static GameObject _wire;
+    private static GameObject _wire;
+    private static GameObject _action;
+    public static List<GameObject> actions = new List<GameObject>();
 
-	public static void TransformSeries(GameObject resistor1, GameObject resistor2)
+    public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
         var deResistor1 = CircuitHandler.GetDoubledEndedObject(resistor1);
         var deResistor2 = CircuitHandler.GetDoubledEndedObject(resistor2);
@@ -39,12 +41,14 @@ public class TransformHandler : MonoBehaviour {
         var position = resistor2.transform.position;
 
         var actionText = "Series Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
-            ") and R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
+            ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
-        //var newAction = Instantiate(action);
-        //newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
-        //newAction.GetComponent<Text>().text = actionText;
-
+        var newAction = Instantiate(_action);
+        newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
+        newAction.GetComponent<Text>().text = actionText;
+        newAction.transform.localScale = new Vector3(1, 1, 1);
+        newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
+        actions.Add(newAction);
 
         var newWire = Instantiate(_wire);
         newWire.transform.position = position;
@@ -66,10 +70,10 @@ public class TransformHandler : MonoBehaviour {
 
     static string CalculateParallelResistance(GameObject comp1, GameObject comp2)
     {
-        int resistance1 = 0;
-        int resistance2 = 0;
-        int.TryParse(comp1.GetComponentInChildren<TextMesh>().text, out resistance1);
-        int.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
+        double resistance1 = 0.0;
+        double resistance2 = 0.0;
+        double.TryParse(comp1.GetComponentInChildren<TextMesh>().text, out resistance1);
+        double.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
         return ((resistance1 + resistance2)/2).ToString();
     }
 
@@ -114,6 +118,7 @@ public class TransformHandler : MonoBehaviour {
                     wire.Add(item);
                 }
             }
+            resistor1.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
             Destroy(resistor2);
         }
         else if (prevComp2.Count == 2)
@@ -146,6 +151,7 @@ public class TransformHandler : MonoBehaviour {
                     wire.Add(item);
                 }
             }
+            resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
             Destroy(resistor1);
         }
         else if (nextComp1.Count == 0)
@@ -162,10 +168,10 @@ public class TransformHandler : MonoBehaviour {
                     wire.Add(item);
                 }
             }
-			Destroy(resistor1);
-
-		}
-		else if (nextComp2.Count == 0)
+            resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
+            Destroy(resistor1);
+        }
+        else if (nextComp2.Count == 0)
 		{
 			deComp1.GetNextComponent().Remove(resistor2);
 			foreach (var item in CircuitHandler.wires)
@@ -179,8 +185,9 @@ public class TransformHandler : MonoBehaviour {
 					wire.Add(item);
 				}
 			}
+            resistor1.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
             Destroy(resistor2);
-		}
+        }
         else
         {
             foreach (var item in prevComp1)
@@ -211,6 +218,7 @@ public class TransformHandler : MonoBehaviour {
                     wire.Add(item);
                 }
             }
+            resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
             Destroy(resistor1);
         }
 
@@ -218,7 +226,16 @@ public class TransformHandler : MonoBehaviour {
         {
             CircuitHandler.wires.Remove(item);
         }
-        resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
+        var actionText = "Parallel Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
+            ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
+
+        var newAction = Instantiate(_action);
+        newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
+        newAction.GetComponent<Text>().text = actionText;
+        newAction.transform.localScale = new Vector3(1, 1, 1);
+        newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
+        actions.Add(newAction);
+
         TransformComplete(resistor1, resistor2);
     }
 
@@ -235,5 +252,10 @@ public class TransformHandler : MonoBehaviour {
     public static void SetWireObject(GameObject wire)
     {
         _wire = wire;
+    }
+
+    public static void SetActionObject(GameObject action)
+    {
+        _action = action;
     }
 }

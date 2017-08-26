@@ -9,12 +9,14 @@ public class LoadRandomCircuit : MonoBehaviour {
     public GameObject node;
     public GameObject resistor;
     public GameObject wire;
+    public GameObject action;
 
     void Start()
     {
         var circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         var index = Random.Range(0, circuits.Length);
         TransformHandler.SetWireObject(wire);
+        TransformHandler.SetActionObject(action);
         StartCoroutine(DrawCircuit(circuits[index]));
     }
 
@@ -128,6 +130,10 @@ public class LoadRandomCircuit : MonoBehaviour {
         foreach (var wire in wires)
         {
             Destroy(wire);
+        }
+        foreach (var action in TransformHandler.actions)
+        {
+            Destroy(action);
         }
 
         CircuitHandler.selected1 = null;
