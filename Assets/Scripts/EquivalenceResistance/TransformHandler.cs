@@ -87,7 +87,10 @@ public class TransformHandler : MonoBehaviour {
         var prevComp2 = deComp2.GetPreviousComponent();
 		var nextComp2 = deComp2.GetNextComponent();
 
-		List<Wire> wire = new List<Wire>();
+        var actionText = "Parallel Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
+        ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
+
+        List<Wire> wire = new List<Wire>();
         if(prevComp1.Count == 2)
         {
             foreach (var item in prevComp2)
@@ -226,8 +229,6 @@ public class TransformHandler : MonoBehaviour {
         {
             CircuitHandler.wires.Remove(item);
         }
-        var actionText = "Parallel Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
-            ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
         var newAction = Instantiate(_action);
         newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
