@@ -16,10 +16,12 @@ public class ConnectionHandler : MonoBehaviour {
     private Vector2 componentPos2;
     public static GameObject connector1;
     public static GameObject connector2;
-    
+
+    public static bool templateActive;
 
 	// Use this for initialization
 	void Start () {
+        templateActive = false;
         circuitComponents = new List<GameObject>();
 
         Vector3 startNodePos = new Vector3(-7, 3, 0);

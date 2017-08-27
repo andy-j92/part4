@@ -18,10 +18,11 @@ public class TemplateScript : MonoBehaviour {
     {
         isHidden = false;
         isRotated = false;
+        ConnectionHandler.templateActive = true;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         isHidden = isWithinBoundary();
         if(isHidden)
         {
@@ -45,10 +46,13 @@ public class TemplateScript : MonoBehaviour {
             {
                 Destroy(gameObject);
                 ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f)));
-            } else if (rayHit.collider == null && !isRotated)
+                ConnectionHandler.templateActive = false;
+            }
+            else if (rayHit.collider == null && !isRotated)
             {
                 Destroy(gameObject);
                 ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.identity));
+                ConnectionHandler.templateActive = false;
             }
         }
         else if(Input.GetMouseButtonDown(1))
