@@ -5,8 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class BackButtonHandler : MonoBehaviour {
 
-	public void MoveToPrevScreen()
+	public void MoveToGameMenuScreen()
     {
         SceneManager.LoadScene("GameMenu");
+    }
+
+    public void MoveToPracticeScreen()
+    {
+        SceneManager.LoadScene("PractisePage");
     }
 }
