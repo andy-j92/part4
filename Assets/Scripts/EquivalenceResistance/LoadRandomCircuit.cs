@@ -9,13 +9,20 @@ public class LoadRandomCircuit : MonoBehaviour {
     public GameObject node;
     public GameObject resistor;
     public GameObject wire;
+    public GameObject action;
+
+    private int currentCircuitIndex = 0;
+    private int numFiles = 0;
+    private FileInfo[] circuits;
 
     void Start()
     {
-        var circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
-        var index = Random.Range(0, circuits.Length);
+        circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
+        currentCircuitIndex = Random.Range(0, circuits.Length);
+        numFiles = circuits.Length;
         TransformHandler.SetWireObject(wire);
-        StartCoroutine(DrawCircuit(circuits[index]));
+        TransformHandler.SetActionObject(action);
+        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
     }
 
     IEnumerator DrawCircuit(FileInfo file)
@@ -117,6 +124,30 @@ public class LoadRandomCircuit : MonoBehaviour {
         }
     }
 
+    public void ResetCircuit()
+    {
+        LoadNewCircuit();
+        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
+    }
+
+    public void PrevCircuit()
+    {
+        LoadNewCircuit();
+        currentCircuitIndex -= 1;
+        if (currentCircuitIndex < 0)
+            currentCircuitIndex = circuits.Length-1;
+        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
+    }
+
+    public void NextCircuit()
+    {
+        LoadNewCircuit();
+        currentCircuitIndex += 1;
+        if (currentCircuitIndex >= circuits.Length)
+            currentCircuitIndex = 0;
+        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
+    }
+
     public void LoadNewCircuit()
     {
         foreach (var component in CircuitHandler.connectedComponents.Keys)
@@ -129,14 +160,16 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             Destroy(wire);
         }
+        foreach (var action in TransformHandler.actions)
+        {
+            Destroy(action);
+        }
 
         CircuitHandler.selected1 = null;
         CircuitHandler.selected2 = null;
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
         CircuitHandler.wires = new List<Wire>();
-        Start();
-
     }
 
 

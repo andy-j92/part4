@@ -91,12 +91,18 @@ public class CircuitHandler : MonoBehaviour {
                         foreach (var item in wireConnectedComp)
                         {
                             parent = item.transform.parent;
-                            if (parent != null && !nextComp.Contains(parent.gameObject) && parent.gameObject != component)
+                            if (parent != null && parent.gameObject != component)
                             {
-                                nextComp.Add(parent.gameObject);
-                                connectionQueue.Enqueue(parent.gameObject);
-
-                                if (!LinkExists(component, parent.gameObject))
+                                if(!nextComp.Contains(parent.gameObject))
+                                {
+                                    nextComp.Add(parent.gameObject);
+                                    connectionQueue.Enqueue(parent.gameObject);
+                                    if (!LinkExists(component, parent.gameObject))
+                                    {
+                                        wires.Add(new Wire(comp, component, parent.gameObject));
+                                    }
+                                }
+                                else
                                 {
                                     wires.Add(new Wire(comp, component, parent.gameObject));
                                 }
@@ -141,11 +147,11 @@ public class CircuitHandler : MonoBehaviour {
         {
             if (CheckSeries(selected1, selected2) != null)
             {
-                TransformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent(), CheckSeries(selected1, selected2));
+                TransformHandler.TransformSeries(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
             }
             else if (CheckSeries(selected2, selected1) != null)
             {
-                TransformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent(), CheckSeries(selected2, selected1));
+                TransformHandler.TransformSeries(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
             else
             {
@@ -157,14 +163,49 @@ public class CircuitHandler : MonoBehaviour {
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
     {
         var nextComp1 = component1.GetNextComponent();
-        var prevComp1 = component2.GetPreviousComponent();
+        var prevComp1 = component1.GetPreviousComponent();
+        var nextComp2 = component2.GetNextComponent();
+        var prevComp2 = component2.GetPreviousComponent();
+
+        GameObject prevNode = null;
+        foreach (var item in prevComp1)
+        {
+            if (item.tag == "Node")
+                prevNode = item;
+        }
 
         if (nextComp1.Count != 1)
             return null;
-        else if (nextComp1.Count == 1 && nextComp1.Contains(component2.GetCurrentComponent()))
-            return component1.GetCurrentComponent();
-        else if (nextComp1.Count == 1 && GetDoubledEndedObject(nextComp1[0]).GetPreviousComponent().Contains(component2.GetCurrentComponent()))
-            return component1.GetCurrentComponent();
+        else if (prevNode != null && GetDoubledEndedObject(prevNode).GetNextComponent().Count != 1)
+            return null;
+        else if (nextComp1.Count == 1 )
+        {
+            if (nextComp1.Contains(component2.GetCurrentComponent()))
+                return component1.GetCurrentComponent();
+            else if (GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Contains(component2.GetCurrentComponent()))
+                return component1.GetCurrentComponent();
+            else if (nextComp2.Count == 1 && nextComp2[0] == prevComp1[0])
+                return component1.GetCurrentComponent();
+            else if (nextComp2.Count == 1 && nextComp2[0] == nextComp1[0])
+                return component1.GetCurrentComponent();
+            else if (prevComp2.Count == 1 && prevComp2[0] == nextComp1[0])
+                return component1.GetCurrentComponent();
+            else
+            {
+                var component = component1.GetNextComponent()[0];
+                var nextComp = GetDoubledEndedObject(component).GetNextComponent();
+                while (nextComp.Count == 1)
+                {
+                    if (nextComp.Contains(component2.GetCurrentComponent()))
+                        return component;
+                    else
+                    {
+                        component = nextComp[0];
+                        nextComp = GetDoubledEndedObject(component).GetNextComponent();
+                    }
+                }
+            }
+        }
         else
         {
             var component = component1.GetNextComponent()[0];
@@ -195,6 +236,10 @@ public class CircuitHandler : MonoBehaviour {
             {
                 TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
+            else
+            {
+                StartCoroutine(ShowFeedBack("The Resistors are not in parallel."));
+            }
         }
     }
 
@@ -206,8 +251,8 @@ public class CircuitHandler : MonoBehaviour {
         var nextComp2 = component2.GetNextComponent();
 
         DoubleEnded prevNode1 = null;
-        GameObject nextNode1 = null;
-        GameObject prevNode2 = null;
+        DoubleEnded nextNode1 = null;
+        DoubleEnded prevNode2 = null;
         DoubleEnded nextNode2 = null;
 
         foreach (var prev in prevComp1)
@@ -218,12 +263,12 @@ public class CircuitHandler : MonoBehaviour {
         foreach (var next in nextComp1)
         {
             if (next.tag == "Node")
-                nextNode1 = next;
+                nextNode1 = GetDoubledEndedObject(next);
         }
         foreach (var prev in prevComp2)
         {
             if (prev.tag == "Node")
-                prevNode2 = prev;
+                prevNode2 = GetDoubledEndedObject(prev);
         }
         foreach (var next in nextComp2)
         {
@@ -231,14 +276,18 @@ public class CircuitHandler : MonoBehaviour {
                 nextNode2 = GetDoubledEndedObject(next);
         }
 
-        if (nextComp1.Contains(component2.GetCurrentComponent()) && component2.GetPreviousComponent()[0] == component1.GetCurrentComponent())
+        if (nextComp1.Contains(component2.GetCurrentComponent()) && component2.GetPreviousComponent()[0] == component1.GetCurrentComponent() && component2.GetNextComponent().Count == 0)
         {
             return true;
         }
-        else if(prevNode1.GetNextComponent().Count > 1)
+        else if(prevNode1 != null && prevNode1.GetNextComponent().Count > 1)
         {
             //R w R w case
-            if(prevNode1.GetNextComponent().Contains(prevNode2) && nextNode2.GetPreviousComponent().Contains(nextNode1))
+            if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode2.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
+            {
+                return true;
+            }
+            else if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode1.GetNextComponent().Contains(nextNode2.GetCurrentComponent()))
             {
                 return true;
             }
@@ -249,32 +298,35 @@ public class CircuitHandler : MonoBehaviour {
                 if(nextNode2.GetNextComponent().Count == 1 && nextNode2.GetNextComponent()[0].tag == "Node")
                 {
                     nextNode = GetDoubledEndedObject(nextNode2.GetNextComponent()[0]);
-                     if (nextNode.GetPreviousComponent().Count != 0 && nextNode.GetPreviousComponent().Contains(nextNode1))
+                    if (nextNode.GetPreviousComponent().Count != 0 && nextNode.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
                     {
                         return true;
                     }
                 }
             }
             //R w w R case
-            else if (GetDoubledEndedObject(nextNode1).GetNextComponent().Contains(component2.GetCurrentComponent()))
+            else
             {
                 DoubleEnded nextNode = null;
                 foreach (var item in prevNode1.GetNextComponent())
                 {
                     if (item.tag == "Node")
+                    {
                         nextNode = GetDoubledEndedObject(item);
+                    }
                 }
-
-                if(nextNode != null && nextNode.GetNextComponent().Count == 1)
+                if (nextNode != null && nextNode.GetNextComponent().Count == 1)
                 {
-                    if (nextNode.GetNextComponent()[0] = prevNode2)
+                    var nextNextNode = nextNode.GetNextComponent()[0];
+                    if (nextNextNode.tag != "Node")
+                        return false;
+                    else if (GetDoubledEndedObject(nextNextNode).GetPreviousComponent().Contains(nextNode.GetCurrentComponent()))
                     {
                         return true;
                     }
                 }
             }
         }
-        
 
         return false;
     }

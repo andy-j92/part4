@@ -29,6 +29,22 @@ public class ComponentsScript : MonoBehaviour {
 
     void OnMouseOver()
     {
+        
+        if (Input.GetMouseButtonDown(0) && gameObject.tag == "Wire")
+        {
+			Debug.Log(gameObject.GetInstanceID());
+		    Debug.Log("\n");
+		
+            foreach (var item in CircuitHandler.wires)
+            {
+                if(item.GetWireObject() == gameObject) {
+                    Debug.Log(item.GetWireObject().GetInstanceID());
+                    Debug.Log(item.GetComponent1().GetInstanceID());
+                    Debug.Log(item.GetComponent2().GetInstanceID());
+                }
+            }
+        }
+
         if (Input.GetMouseButtonDown(0) && !isSelected)
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
@@ -82,7 +98,7 @@ public class ComponentsScript : MonoBehaviour {
             else
                 gameObject.GetComponent<SpriteRenderer>().color = Color.white;
  
-            if (CircuitHandler.selected1.GetCurrentComponent() == gameObject)
+            if (CircuitHandler.selected1 != null && CircuitHandler.selected1.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected1 = null;
             else if (CircuitHandler.selected2.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected2 = null;
