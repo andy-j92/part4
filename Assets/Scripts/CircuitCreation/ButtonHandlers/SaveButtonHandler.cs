@@ -42,45 +42,12 @@ public class SaveButtonHandler : MonoBehaviour {
 
     public void OpenModal()
     {
-        var nodes= GameObject.FindGameObjectsWithTag("Node");
-        var wires = GameObject.FindGameObjectsWithTag("Wire");
-        var resistors = GameObject.FindGameObjectsWithTag("Resistor");
-
-        foreach (var item in nodes)
-        {
-            item.GetComponent<BoxCollider2D>().enabled = false;
-        }
-        foreach (var item in wires)
-        {
-            item.GetComponent<BoxCollider2D>().enabled = false;
-        }
-        foreach (var item in resistors)
-        {
-            item.GetComponent<BoxCollider2D>().enabled = false;
-        }
-
         saveModal.SetActive(true);
         saveModal.transform.SetAsFirstSibling();
     }
 
     public void CloseModal()
     {
-        var nodes = GameObject.FindGameObjectsWithTag("Node");
-        var wires = GameObject.FindGameObjectsWithTag("Wire");
-        var resistors = GameObject.FindGameObjectsWithTag("Resistor");
-
-        foreach (var item in nodes)
-        {
-            item.GetComponent<BoxCollider2D>().enabled = true;
-        }
-        foreach (var item in wires)
-        {
-            item.GetComponent<BoxCollider2D>().enabled = true;
-        }
-        foreach (var item in resistors)
-        {
-            item.GetComponent<BoxCollider2D>().enabled = true;
-        }
         saveModal.SetActive(false);
     }
 

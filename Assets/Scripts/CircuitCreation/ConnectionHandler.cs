@@ -27,7 +27,7 @@ public class ConnectionHandler : MonoBehaviour {
         Vector3 startNodePos = new Vector3(-7, 3, 0);
         Vector3 endNodePos = new Vector3(-7, -2, 0);
 
-        var startNode = Instantiate(node, startNodePos, Quaternion.identity);
+    var startNode = Instantiate(node, startNodePos, Quaternion.identity);
         startNode.tag = "StartingNode";
         circuitComponents.Add(startNode);
 

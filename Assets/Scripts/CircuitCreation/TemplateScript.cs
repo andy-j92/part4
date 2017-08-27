@@ -34,7 +34,7 @@ public class TemplateScript : MonoBehaviour {
         }
 
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position = new Vector2(Mathf.Round(mousePosition.x), Mathf.Round(mousePosition.y));
+        transform.position = new Vector3(Mathf.Round(mousePosition.x), Mathf.Round(mousePosition.y), 1.0f);
 
         if(Input.GetMouseButtonDown(0))
         {
@@ -77,9 +77,9 @@ public class TemplateScript : MonoBehaviour {
 
     bool isWithinBoundary()
     {
-
-        if (Input.mousePosition.x < 20 || Input.mousePosition.x > 642 || Input.mousePosition.y < 36 || Input.mousePosition.y > 373)
-            return false;
-        return true;
+        var circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
+        if (RectTransformUtility.RectangleContainsScreenPoint(circuitPanel.GetComponent<RectTransform>(), Input.mousePosition, Camera.main))
+            return true;
+        return false;
     }
 }
