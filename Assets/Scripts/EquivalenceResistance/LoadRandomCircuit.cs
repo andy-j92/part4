@@ -15,10 +15,12 @@ public class LoadRandomCircuit : MonoBehaviour {
     private int numFiles = 0;
     private FileInfo[] circuits;
 
+
+
     void Start()
     {
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
-        currentCircuitIndex = Random.Range(0, circuits.Length);
+        currentCircuitIndex = PractisePreview.numCircuit;
         numFiles = circuits.Length;
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);

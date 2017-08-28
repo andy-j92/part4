@@ -58,6 +58,7 @@ public class TemplateScript : MonoBehaviour {
         else if(Input.GetMouseButtonDown(1))
         {
             Destroy(gameObject);
+            ConnectionHandler.templateActive = false;
         }
 
         if(Input.GetKeyDown(KeyCode.R))

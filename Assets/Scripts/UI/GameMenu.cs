@@ -6,7 +6,7 @@ public class GameMenu : MonoBehaviour
 {
     public void MainGame(string name)
     {
-        SceneManager.LoadScene("PlayerSelect");
+        SceneManager.LoadScene("SelectPlayer");
     }
 
     public void DC_Practise(string name)
