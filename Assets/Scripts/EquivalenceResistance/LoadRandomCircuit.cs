@@ -20,7 +20,6 @@ public class LoadRandomCircuit : MonoBehaviour {
     void Start()
     {
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
-        currentCircuitIndex = PractisePreview.numCircuit;
         numFiles = circuits.Length;
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);

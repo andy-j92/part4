@@ -46,6 +46,7 @@ public class TransformHandler : MonoBehaviour {
         var newAction = Instantiate(_action);
         newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
         newAction.GetComponent<Text>().text = actionText;
+        newAction.GetComponent<Text>().fontSize = 18;
         newAction.transform.localScale = new Vector3(1, 1, 1);
         newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
         actions.Add(newAction);

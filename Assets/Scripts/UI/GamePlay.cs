@@ -9,6 +9,9 @@ public class GamePlay : MonoBehaviour
     public int one, two, numplayer;
     public Image pOne, pTwo;
     public Animator aOne, aTwo;
+    public float timer = 20f;
+    public Text time;
+    public int numQ = 0;
 
     void Awake()
     {
@@ -75,5 +78,32 @@ public class GamePlay : MonoBehaviour
 
         }
     }
-    
+
+    void Start()
+    {
+        InvokeRepeating("decreaseTimeRemaining", 1 , 1);
+    }
+
+    private void Update()
+    {
+        if (timer == 0)
+        {
+            numQ++;
+
+            if (numQ == 10)
+            {
+                //finish game;
+            }
+
+            timer = 20;
+        }
+
+        time.text = timer +"";
+
+    }
+
+    void decreaseTimeRemaining()
+    {
+        timer--;
+    }
 }
