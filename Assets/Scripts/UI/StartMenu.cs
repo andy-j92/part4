@@ -15,6 +15,11 @@ public class StartMenu: MonoBehaviour
 		SceneManager.LoadScene ("HelpScreen");
 	}
 
+    public void Exit ()
+    {
+        Application.Quit();
+    }
+
 }
 
 

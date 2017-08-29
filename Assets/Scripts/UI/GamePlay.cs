@@ -10,14 +10,30 @@ public class GamePlay : MonoBehaviour
     public Image pOne, pTwo;
     public Animator aOne, aTwo;
     public float timer = 20f;
-    public Text time;
+    public Text time, final;
     public int numQ = 0;
+    public Image circuit;
+    public Sprite[] circuits = new Sprite[9];
+    public Transform gameOver, goBack;
+    public Boolean pause;
 
     void Awake()
     {
+
         one = SelectPlayer.ONE;
         two = SelectPlayer.TWO;
         numplayer = SelectPlayer.PNUM;
+
+        circuits[0] = Resources.Load<Sprite>("circuit/circuitOne");
+        circuits[1] = Resources.Load<Sprite>("circuit/circuitTwo");
+        circuits[2] = Resources.Load<Sprite>("circuit/circuitThree");
+        circuits[3] = Resources.Load<Sprite>("circuit/circuitFour");
+        circuits[4] = Resources.Load<Sprite>("circuit/circuitFive");
+        circuits[5] = Resources.Load<Sprite>("circuit/circuitSix");
+        circuits[6] = Resources.Load<Sprite>("circuit/circuitSeven");
+        circuits[7] = Resources.Load<Sprite>("circuit/circuitEight");
+        circuits[8] = Resources.Load<Sprite>("circuit/circuitNine");
+
 
         if (numplayer == 1)
         {
@@ -81,25 +97,49 @@ public class GamePlay : MonoBehaviour
 
     void Start()
     {
+        gameOver.gameObject.SetActive(false);
+        circuit.sprite = circuits[0];
         InvokeRepeating("decreaseTimeRemaining", 1 , 1);
     }
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            goBack.gameObject.SetActive(true);
+            //stopTimer
+        }
+
         if (timer == 0)
         {
             numQ++;
 
-            if (numQ == 10)
+            if (numQ == 2)
             {
-                //finish game;
+                timer = 0;
+                pause = true;
+                gameOver.gameObject.SetActive(true);
+
+                if (numplayer == 1)
+                {
+                    final.text = "HIGHSCORE:";
+                }
+
+                else
+                {
+                    final.text = "PLAYER WINS";
+                }
             }
 
-            timer = 20;
+            else
+            {
+                circuit.sprite = circuits[numQ];
+                timer = 20;
+            }
         }
-
-        time.text = timer +"";
-
+       
+           time.text = timer + "";
+        
     }
 
     void decreaseTimeRemaining()
