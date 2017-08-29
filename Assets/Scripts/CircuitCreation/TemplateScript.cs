@@ -18,10 +18,11 @@ public class TemplateScript : MonoBehaviour {
     {
         isHidden = false;
         isRotated = false;
+        ConnectionHandler.templateActive = true;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         isHidden = isWithinBoundary();
         if(isHidden)
         {
@@ -33,7 +34,7 @@ public class TemplateScript : MonoBehaviour {
         }
 
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position = new Vector2(Mathf.Round(mousePosition.x), Mathf.Round(mousePosition.y));
+        transform.position = new Vector3(Mathf.Round(mousePosition.x), Mathf.Round(mousePosition.y), 1.0f);
 
         if(Input.GetMouseButtonDown(0))
         {
@@ -45,15 +46,19 @@ public class TemplateScript : MonoBehaviour {
             {
                 Destroy(gameObject);
                 ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f)));
-            } else if (rayHit.collider == null && !isRotated)
+                ConnectionHandler.templateActive = false;
+            }
+            else if (rayHit.collider == null && !isRotated)
             {
                 Destroy(gameObject);
                 ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.identity));
+                ConnectionHandler.templateActive = false;
             }
         }
         else if(Input.GetMouseButtonDown(1))
         {
             Destroy(gameObject);
+            ConnectionHandler.templateActive = false;
         }
 
         if(Input.GetKeyDown(KeyCode.R))
@@ -73,9 +78,9 @@ public class TemplateScript : MonoBehaviour {
 
     bool isWithinBoundary()
     {
-
-        if (Input.mousePosition.x < 20 || Input.mousePosition.x > 642 || Input.mousePosition.y < 36 || Input.mousePosition.y > 373)
-            return false;
-        return true;
+        var circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
+        if (RectTransformUtility.RectangleContainsScreenPoint(circuitPanel.GetComponent<RectTransform>(), Input.mousePosition, Camera.main))
+            return true;
+        return false;
     }
 }

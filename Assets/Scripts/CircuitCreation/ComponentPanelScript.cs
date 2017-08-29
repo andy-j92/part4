@@ -9,6 +9,7 @@ public class ComponentPanelScript : MonoBehaviour {
 	// Update is called once per frame
 	void OnMouseUp()
     {
-        Instantiate(componentTemplate, Input.mousePosition, Quaternion.identity);
+        if(ConnectionHandler.templateActive == false)
+            Instantiate(componentTemplate, Input.mousePosition, Quaternion.identity);
     }
 }

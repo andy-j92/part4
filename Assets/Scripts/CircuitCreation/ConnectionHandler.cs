@@ -16,16 +16,18 @@ public class ConnectionHandler : MonoBehaviour {
     private Vector2 componentPos2;
     public static GameObject connector1;
     public static GameObject connector2;
-    
+
+    public static bool templateActive;
 
 	// Use this for initialization
 	void Start () {
+        templateActive = false;
         circuitComponents = new List<GameObject>();
 
         Vector3 startNodePos = new Vector3(-7, 3, 0);
         Vector3 endNodePos = new Vector3(-7, -2, 0);
 
-        var startNode = Instantiate(node, startNodePos, Quaternion.identity);
+    var startNode = Instantiate(node, startNodePos, Quaternion.identity);
         startNode.tag = "StartingNode";
         circuitComponents.Add(startNode);
 

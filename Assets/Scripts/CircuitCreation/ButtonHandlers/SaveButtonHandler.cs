@@ -32,6 +32,14 @@ public class SaveButtonHandler : MonoBehaviour {
 
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return) && saveModal.active == true)
+            SaveCircuit();
+        else if (Input.GetKeyDown(KeyCode.Escape) && saveModal.active == true)
+            CloseModal();
+    }
+
     public void OpenModal()
     {
         saveModal.SetActive(true);
@@ -45,7 +53,6 @@ public class SaveButtonHandler : MonoBehaviour {
 
     public void SaveCircuit()
     {
-
         var filename = filenameInput.GetComponent<InputField>().text;
 
         foreach (GameObject component in ConnectionHandler.circuitComponents)
