@@ -167,6 +167,8 @@ public class CircuitHandler : MonoBehaviour {
         var nextComp2 = component2.GetNextComponent();
         var prevComp2 = component2.GetPreviousComponent();
 
+        if (CheckParallel(component1, component2) || CheckParallel(component2, component1))
+            return null;
         GameObject prevNode = null;
         foreach (var item in prevComp1)
         {
@@ -315,14 +317,24 @@ public class CircuitHandler : MonoBehaviour {
                         nextNode = GetDoubledEndedObject(item);
                     }
                 }
+
                 if (nextNode != null && nextNode.GetNextComponent().Count == 1)
                 {
                     var nextNextNode = nextNode.GetNextComponent()[0];
                     if (nextNextNode.tag != "Node")
                         return false;
-                    else if (GetDoubledEndedObject(nextNextNode).GetPreviousComponent().Contains(nextNode.GetCurrentComponent()))
+                    else if (GetDoubledEndedObject(nextNextNode).GetPreviousComponent().Contains(component2.GetCurrentComponent()) || 
+                            GetDoubledEndedObject(nextNextNode).GetNextComponent().Contains(component2.GetCurrentComponent()))
                     {
-                        return true;
+                        Debug.Log("here1");
+                        if (component2.GetNextComponent().Count == 1 && component2.GetNextComponent()[0] == nextNextNode)
+                        {
+                            Debug.Log("here2");
+                            if (component2.GetPreviousComponent().Count == 1 && component1.GetNextComponent().Count == 1 && component1.GetNextComponent()[0] == component2.GetPreviousComponent()[0])
+                                return true;
+                        }
+                        else if (GetDoubledEndedObject(nextNextNode).GetNextComponent().Contains(component2.GetCurrentComponent()))
+                            return true;
                     }
                 }
             }
