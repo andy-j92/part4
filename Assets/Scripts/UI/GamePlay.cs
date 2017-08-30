@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class GamePlay : MonoBehaviour
 {
+    public Text help;
+    public Transform helpScreen;
+    public Boolean state = false;
     public Button playerOne, playerTwo;
     public int one, two, numplayer;
     public Image pOne, pTwo;
@@ -99,12 +102,15 @@ public class GamePlay : MonoBehaviour
     {
         gameOver.gameObject.SetActive(false);
         circuit.sprite = circuits[0];
-        InvokeRepeating("decreaseTimeRemaining", 1 , 1);
+        help.text = " < Objective >: Calculate and Enter the correct equvialent resistance of the circuit. \n < Score System >: Player to answer correct will < +score >. \n IF, both players answer correct within the give time, first person to answer will gain extra points. \n \n<EXIT> : | esc | ";
+       InvokeRepeating("decreaseTimeRemaining", 1 , 1);
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        helpScreen.gameObject.SetActive(state);
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             goBack.gameObject.SetActive(true);
             //stopTimer
@@ -145,5 +151,10 @@ public class GamePlay : MonoBehaviour
     void decreaseTimeRemaining()
     {
         timer--;
+    }
+
+    public void HELP()
+    {
+        state = !state;
     }
 }
