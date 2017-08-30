@@ -79,7 +79,6 @@ public class LoadRandomCircuit : MonoBehaviour {
         }
         reader.Close();
         yield return new WaitForSeconds(0.1f);
-        CircuitHandler.version.AddVersion(CircuitHandler.components.ToArray());
         new CircuitHandler().StartSetUp();
         DisableScripts();
 

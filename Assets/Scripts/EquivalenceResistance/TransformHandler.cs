@@ -58,9 +58,6 @@ public class TransformHandler : MonoBehaviour {
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
         Destroy(resistor2);
         TransformComplete(resistor1, resistor2);
-
-        var components = FindObjectsOfType<GameObject>();
-		CircuitHandler.version.AddVersion(components);
 	}
 
     static string CalculateSeriesResistance(GameObject comp1, GameObject comp2)
@@ -242,10 +239,6 @@ public class TransformHandler : MonoBehaviour {
         actions.Add(newAction);
 
         TransformComplete(resistor1, resistor2);
-
-		var components = FindObjectsOfType<GameObject>();
-        CircuitHandler.version.AddVersion(components);
-
 	}
 
     static void  TransformComplete(GameObject resistor1, GameObject resistor2)

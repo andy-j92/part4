@@ -12,7 +12,6 @@ public class CircuitHandler : MonoBehaviour {
     public static List<DoubleEnded> componentOrder = new List<DoubleEnded>();
     public static List<GameObject> components = new List<GameObject>();
     public static List<Wire> wires = new List<Wire>();
-    public static VersionControl version = new VersionControl();
 
     public static Dictionary<GameObject, List<GameObject>> connectedComponents = new Dictionary<GameObject, List<GameObject>>();
     private Queue<GameObject> connectionQueue = new Queue<GameObject>();
@@ -168,6 +167,8 @@ public class CircuitHandler : MonoBehaviour {
         var nextComp2 = component2.GetNextComponent();
         var prevComp2 = component2.GetPreviousComponent();
 
+        if (CheckParallel(component1, component2) || CheckParallel(component2, component1))
+            return null;
         GameObject prevNode = null;
         foreach (var item in prevComp1)
         {
