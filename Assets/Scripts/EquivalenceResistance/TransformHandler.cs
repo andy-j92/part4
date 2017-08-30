@@ -60,8 +60,8 @@ public class TransformHandler : MonoBehaviour {
         TransformComplete(resistor1, resistor2);
 
         var components = FindObjectsOfType<GameObject>();
-        VersionControl.AddVersion(components);
-    }
+		CircuitHandler.version.AddVersion(components);
+	}
 
     static string CalculateSeriesResistance(GameObject comp1, GameObject comp2)
     {
@@ -244,7 +244,7 @@ public class TransformHandler : MonoBehaviour {
         TransformComplete(resistor1, resistor2);
 
 		var components = FindObjectsOfType<GameObject>();
-		VersionControl.AddVersion(components);
+        CircuitHandler.version.AddVersion(components);
 
 	}
 

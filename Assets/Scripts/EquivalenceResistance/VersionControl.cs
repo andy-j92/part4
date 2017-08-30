@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class VersionControl : MonoBehaviour {
 
-    public static Queue<GameObject[]> versions = new Queue<GameObject[]>();
+    private Queue<GameObject[]> versions = new Queue<GameObject[]>();
 
-    public static void AddVersion(GameObject[] version)
+    public VersionControl()
+    {
+        versions = new Queue<GameObject[]>();
+    }
+
+    public void AddVersion(GameObject[] version)
     {
         Debug.Log(version);
         versions.Enqueue(version);
