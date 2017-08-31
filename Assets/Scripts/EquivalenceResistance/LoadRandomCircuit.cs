@@ -151,16 +151,25 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     public void LoadNewCircuit()
     {
-        foreach (var component in CircuitHandler.connectedComponents.Keys)
+        var resistors = GameObject.FindGameObjectsWithTag("Resistor");
+        var nodes = GameObject.FindGameObjectsWithTag("Node");
+        var wires = GameObject.FindGameObjectsWithTag("Wire");
+
+        foreach (var resistor in resistors)
         {
-            Destroy(component);
+            Destroy(resistor);
         }
 
-        var wires = GameObject.FindGameObjectsWithTag("Wire");
+        foreach (var node in nodes)
+        {
+            Destroy(node);
+        }
+
         foreach (var wire in wires)
         {
             Destroy(wire);
         }
+
         foreach (var action in TransformHandler.actions)
         {
             Destroy(action);

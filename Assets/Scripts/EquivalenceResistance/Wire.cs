@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wire {
+public class Wire : MonoBehaviour {
 
     private GameObject _wire;
     private GameObject _component1;
