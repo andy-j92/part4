@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class ConnectorScript : MonoBehaviour {
 
     private bool isSelected;
-
     void Start()
     {
         if (SceneManager.GetActiveScene().name.Equals("CircuitCreator"))

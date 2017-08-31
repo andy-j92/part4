@@ -18,11 +18,14 @@ public class ConnectionHandler : MonoBehaviour {
     public static GameObject connector2;
 
     public static bool templateActive;
+    private GameObject connectionFeedback;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         templateActive = false;
         circuitComponents = new List<GameObject>();
+        connectionFeedback = GameObject.FindGameObjectWithTag("ConnectionFeedback");
+        connectionFeedback.SetActive(false);
 
         Vector3 startNodePos = new Vector3(-7, 3, 0);
         Vector3 endNodePos = new Vector3(-7, -2, 0);
@@ -34,7 +37,7 @@ public class ConnectionHandler : MonoBehaviour {
 
         var endNode = Instantiate(node, endNodePos, Quaternion.identity);
         endNode.tag = "EndingNode";
-		startNode.GetComponent<BoxCollider2D>().enabled = false;
+        endNode.GetComponent<BoxCollider2D>().enabled = false;
 		circuitComponents.Add(endNode);
     }
 	
@@ -60,10 +63,15 @@ public class ConnectionHandler : MonoBehaviour {
         var xDiff = Mathf.Round(pos1.x - pos2.x);
         var yDiff = Mathf.Round(pos1.y - pos2.y);
 
-        //if (isNode(parentTag1))
-        //    wirePos -= connector1.transform.localPosition;
-        
-        if(xDiff < 0)
+        if (connector1.transform.parent.gameObject.tag == "StartingNode" && connector2.transform.parent.gameObject.tag == "EndingNode" ||
+            connector2.transform.parent.gameObject.tag == "StartingNode" && connector1.transform.parent.gameObject.tag == "EndingNode")
+        {
+            ResetConnectors(connector1, connector2);
+            StartCoroutine(ShowFeedback());
+            return;
+        }
+
+        if (xDiff < 0)
         {
             newWire = Instantiate(wire, wirePos, Quaternion.identity);
             scale = isNode(parentTag1, parentTag2) ? Mathf.Abs(pos1.x - pos2.x) * multiplier + 0.2f : Mathf.Abs(pos1.x - pos2.x) * multiplier;
@@ -123,5 +131,12 @@ public class ConnectionHandler : MonoBehaviour {
         {
             
         }
+    }
+
+    IEnumerator ShowFeedback()
+    {
+        connectionFeedback.SetActive(true);
+        yield return new WaitForSeconds(2);
+        connectionFeedback.SetActive(false);
     }
 }
