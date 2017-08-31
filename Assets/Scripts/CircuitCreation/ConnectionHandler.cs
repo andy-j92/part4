@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ConnectionHandler : MonoBehaviour {
 
@@ -67,7 +68,14 @@ public class ConnectionHandler : MonoBehaviour {
             connector2.transform.parent.gameObject.tag == "StartingNode" && connector1.transform.parent.gameObject.tag == "EndingNode")
         {
             ResetConnectors(connector1, connector2);
-            StartCoroutine(ShowFeedback());
+            StartCoroutine(ShowFeedback("Starting node and Ending node cannot be connected."));
+            return;
+        }
+
+        if(connector1.transform.parent.tag == "Resistor" && connector2.transform.parent.tag == "Resistor")
+        {
+            ResetConnectors(connector1, connector2);
+            StartCoroutine(ShowFeedback("Resistors must be connected using nodes."));
             return;
         }
 
@@ -133,8 +141,9 @@ public class ConnectionHandler : MonoBehaviour {
         }
     }
 
-    IEnumerator ShowFeedback()
+    IEnumerator ShowFeedback(string feedback)
     {
+        connectionFeedback.GetComponent<Text>().text = feedback;
         connectionFeedback.SetActive(true);
         yield return new WaitForSeconds(2);
         connectionFeedback.SetActive(false);
