@@ -56,11 +56,11 @@ public class ConnectionHandler : MonoBehaviour {
     void ConnectComponents(GameObject connector1, GameObject connector2)
     {
         var pos1 = connector1.transform.position;
-        //var wirePos = new Vector3(pos1.x, pos1.y, 1);
+        var pos2 = connector2.transform.position;
+
         var wirePos = (connector1.transform.position + connector2.transform.position)/2;
         var parentTag1 = connector1.transform.parent.gameObject.tag;
         var parentTag2 = connector2.transform.parent.gameObject.tag;
-        var pos2 = connector2.transform.position;
         var xDiff = Mathf.Round(pos1.x - pos2.x);
         var yDiff = Mathf.Round(pos1.y - pos2.y);
 
@@ -76,6 +76,16 @@ public class ConnectionHandler : MonoBehaviour {
         {
             ResetConnectors(connector1, connector2);
             StartCoroutine(ShowFeedback("Resistors must be connected using nodes."));
+            return;
+        }
+
+        Debug.Log(Mathf.Abs(xDiff));
+        Debug.Log(Mathf.Abs(yDiff));
+
+        if (Mathf.Abs(xDiff) != 0 && Mathf.Abs(yDiff) != 0)
+        {
+            ResetConnectors(connector1, connector2);
+            StartCoroutine(ShowFeedback("Two components must be on the same axis position."));
             return;
         }
 
