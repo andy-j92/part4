@@ -14,11 +14,13 @@ public class LoadRandomCircuit : MonoBehaviour {
     private int currentCircuitIndex = 0;
     private int numFiles = 0;
     private FileInfo[] circuits;
+    private GameObject circuitPanel;
 
 
 
     void Start()
     {
+        circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         numFiles = circuits.Length;
         TransformHandler.SetWireObject(wire);
@@ -49,14 +51,10 @@ public class LoadRandomCircuit : MonoBehaviour {
             if(type.Equals("Resistor"))
             {
                 component = Instantiate(resistor, position, Quaternion.identity);
-                component.transform.localScale = scale;
-                component.transform.localRotation = rotation;
             }
             else if(type.Equals("Node"))
             {
                 component = Instantiate(node, position, Quaternion.identity);
-                component.transform.localScale = scale;
-                component.transform.localRotation = rotation;
 
                 if (position.x == -7 && position.y == 3 && position.z == 0)
                 {
@@ -71,9 +69,11 @@ public class LoadRandomCircuit : MonoBehaviour {
             else if(type.Equals("Wire"))
             {
                 component = Instantiate(wire, position, Quaternion.identity);
-                component.transform.localScale = scale;
-                component.transform.localRotation = rotation;
             }
+
+            component.transform.localScale = scale;
+            component.transform.localRotation = rotation;
+
             CircuitHandler.components.Add(component);
 
         }
