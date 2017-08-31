@@ -29,11 +29,13 @@ public class ConnectionHandler : MonoBehaviour {
 
     var startNode = Instantiate(node, startNodePos, Quaternion.identity);
         startNode.tag = "StartingNode";
+        startNode.GetComponent<BoxCollider2D>().enabled = false;
         circuitComponents.Add(startNode);
 
         var endNode = Instantiate(node, endNodePos, Quaternion.identity);
         endNode.tag = "EndingNode";
-        circuitComponents.Add(endNode);
+		startNode.GetComponent<BoxCollider2D>().enabled = false;
+		circuitComponents.Add(endNode);
     }
 	
 	// Update is called once per frame

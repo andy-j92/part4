@@ -100,7 +100,7 @@ public class ComponentsScript : MonoBehaviour {
  
             if (CircuitHandler.selected1 != null && CircuitHandler.selected1.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected1 = null;
-            else if (CircuitHandler.selected2.GetCurrentComponent() == gameObject)
+            else if (CircuitHandler.selected1 != null && CircuitHandler.selected2.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected2 = null;
         }
         
