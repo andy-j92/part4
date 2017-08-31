@@ -164,7 +164,8 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             Destroy(node);
         }
-
+        Destroy(GameObject.FindGameObjectsWithTag("StartingNode")[0]);
+        Destroy(GameObject.FindGameObjectsWithTag("EndingNode")[0]);
         foreach (var wire in wires)
         {
             Destroy(wire);
