@@ -19,6 +19,7 @@ public class GamePlay : MonoBehaviour
     public Sprite[] circuits = new Sprite[9];
     public Transform gameOver, goBack;
     public Boolean pause;
+    public InputField p1ans, p2ans;
 
     void Awake()
     {
@@ -41,6 +42,7 @@ public class GamePlay : MonoBehaviour
         if (numplayer == 1)
         {
             playerTwo.gameObject.SetActive(false);
+            p2ans.gameObject.SetActive(false);
             switch (one)
             {
                 case 1:
@@ -61,6 +63,7 @@ public class GamePlay : MonoBehaviour
         else
         {
             playerTwo.gameObject.SetActive (true);
+            p2ans.gameObject.SetActive(true);
             switch (one)
             {
                 case 1:

@@ -14,6 +14,11 @@ public class SelectPlayer : MonoBehaviour
 
     public static int one=0, two=0;
 
+	void Start()
+	{
+		playernum = 1;
+		num = 0;
+	}
     public void player1buttons(bool one_cap, bool one_led, bool one_res, bool one_trans)
     {
         if (state1 == false)
