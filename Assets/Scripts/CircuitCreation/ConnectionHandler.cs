@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ConnectionHandler : MonoBehaviour {
 
     public static List<GameObject> circuitComponents;
+    public static List<Wire> wires;
     public GameObject wire;
     public GameObject node;
     public float multiplier;
@@ -25,6 +26,7 @@ public class ConnectionHandler : MonoBehaviour {
     void Start () {
         templateActive = false;
         circuitComponents = new List<GameObject>();
+        wires = new List<Wire>();
         connectionFeedback = GameObject.FindGameObjectWithTag("ConnectionFeedback");
         connectionFeedback.SetActive(false);
 
@@ -116,6 +118,7 @@ public class ConnectionHandler : MonoBehaviour {
         }
 
         circuitComponents.Add(newWire);
+        wires.Add(new Wire(newWire, connector1.transform.parent.gameObject, connector2.transform.parent.gameObject));
         ResetConnectors(connector1, connector2);
 
     }
