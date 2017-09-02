@@ -22,6 +22,13 @@ public class ComponentsScript : MonoBehaviour {
         if ((Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete)) && isSelected)
         {
             ConnectionHandler.circuitComponents.Remove(gameObject);
+            Wire wire = null;
+            foreach (var item in ConnectionHandler.wires)
+            {
+                if (item.GetWireObject() == gameObject)
+                    wire = item;
+            }
+            ConnectionHandler.wires.Remove(wire);
             Destroy(gameObject);
         }
 
