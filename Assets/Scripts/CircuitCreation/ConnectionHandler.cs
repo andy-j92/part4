@@ -24,6 +24,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        wire.GetComponent<BoxCollider2D>().isTrigger = false;
         templateActive = false;
         circuitComponents = new List<GameObject>();
         wires = new List<Wire>();
