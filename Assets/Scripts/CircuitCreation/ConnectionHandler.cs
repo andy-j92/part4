@@ -77,7 +77,14 @@ public class ConnectionHandler : MonoBehaviour {
             return;
         }
 
-        if(parent1.tag == "Resistor" && parent2.tag == "Resistor")
+        if (parent1.gameObject == parent2.gameObject)
+        {
+            ResetConnectors(connector1, connector2);
+            StartCoroutine(ShowFeedback("You cannot connect connectors from the same component."));
+            return;
+        }
+
+        if (parent1.tag == "Resistor" && parent2.tag == "Resistor")
         {
             ResetConnectors(connector1, connector2);
             StartCoroutine(ShowFeedback("Resistors must be connected using nodes."));
