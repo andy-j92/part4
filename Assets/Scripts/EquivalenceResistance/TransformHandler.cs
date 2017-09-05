@@ -16,26 +16,30 @@ public class TransformHandler : MonoBehaviour {
         var deResistor1 = CircuitHandler.GetDoubledEndedObject(resistor1);
         var deResistor2 = CircuitHandler.GetDoubledEndedObject(resistor2);
         //Components in series can only have a single previous component
+        var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
         var prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
 
-        if(deResistor2.GetNextComponent().Count == 0)
+        //components in series must have a single prev and next or 2 prevs or 2 nexts 
+        if(nextComp2.GetPreviousComponent().Count != 0)
         {
-            var nextComp1 = CircuitHandler.GetDoubledEndedObject(deResistor1.GetNextComponent()[0]);
-            nextComp1.GetNextComponent().Remove(resistor2);
-            deResistor2.GetPreviousComponent().Remove(nextComp1.GetCurrentComponent());
-            nextComp1.GetPreviousComponent().Add(deResistor2.GetPreviousComponent()[0]);
-
-            var prevNode2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
-            prevNode2.GetNextComponent().Remove(resistor2);
-            prevNode2.GetNextComponent().Add(nextComp1.GetCurrentComponent());
+            nextComp2.GetPreviousComponent().Remove(resistor2);
+            nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
         }
-        else
+        else if(nextComp2.GetNextComponent().Count != 0)
         {
-            var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
+            nextComp2.GetNextComponent().Remove(resistor2);
+            nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
+        }
+        else if(prevComp2.GetNextComponent().Count != 0)
+        {
             prevComp2.GetNextComponent().Remove(resistor2);
             prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
         }
-        
+        else if (prevComp2.GetPreviousComponent().Count != 0)
+        {
+            prevComp2.GetPreviousComponent().Remove(resistor2);
+            prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
+        }
 
         var rotation = resistor2.transform.rotation;
         var position = resistor2.transform.position;
@@ -44,7 +48,7 @@ public class TransformHandler : MonoBehaviour {
             ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
         var newAction = Instantiate(_action);
-        newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
+        newAction.transform.SetParent(GameObject.FindGameObjectWithTag("History").transform);
         newAction.GetComponent<Text>().text = actionText;
         newAction.GetComponent<Text>().fontSize = 18;
         newAction.transform.localScale = new Vector3(1, 1, 1);
@@ -56,7 +60,7 @@ public class TransformHandler : MonoBehaviour {
         newWire.transform.localScale = new Vector3(3, 1, 1);
         newWire.transform.rotation = rotation;
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
-        Destroy(resistor2);
+        resistor2.SetActive(false);
         TransformComplete(resistor1, resistor2);
     }
 
@@ -232,7 +236,7 @@ public class TransformHandler : MonoBehaviour {
         }
 
         var newAction = Instantiate(_action);
-        newAction.transform.parent = GameObject.FindGameObjectWithTag("History").transform;
+        newAction.transform.SetParent(GameObject.FindGameObjectWithTag("History").transform);
         newAction.GetComponent<Text>().text = actionText;
         newAction.transform.localScale = new Vector3(1, 1, 1);
         newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);

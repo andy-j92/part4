@@ -20,6 +20,7 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     void Start()
     {
+        wire.GetComponent<BoxCollider2D>().isTrigger = true;
         circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         numFiles = circuits.Length;
