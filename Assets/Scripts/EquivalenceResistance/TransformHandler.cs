@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TransformHandler : MonoBehaviour {
+public class TransformHandler : MonoBehaviour
+{
 
-   // public GameObject action;
+    // public GameObject action;
 
     private static GameObject _wire;
     private static GameObject _action;
@@ -20,25 +21,15 @@ public class TransformHandler : MonoBehaviour {
         var prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
 
         //components in series must have a single prev and next or 2 prevs or 2 nexts 
-        if(nextComp2.GetPreviousComponent().Count != 0)
-        {
-            nextComp2.GetPreviousComponent().Remove(resistor2);
-            nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
-        }
-        else if(nextComp2.GetNextComponent().Count != 0)
-        {
-            nextComp2.GetNextComponent().Remove(resistor2);
-            nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
-        }
-        else if(prevComp2.GetNextComponent().Count != 0)
+        if (prevComp2.GetNextComponent().Contains(resistor2))
         {
             prevComp2.GetNextComponent().Remove(resistor2);
             prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
         }
-        else if (prevComp2.GetPreviousComponent().Count != 0)
+        if (nextComp2.GetPreviousComponent().Contains(resistor2))
         {
-            prevComp2.GetPreviousComponent().Remove(resistor2);
-            prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
+            nextComp2.GetPreviousComponent().Remove(resistor2);
+            nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
         }
 
         var rotation = resistor2.transform.rotation;
@@ -79,7 +70,7 @@ public class TransformHandler : MonoBehaviour {
         double resistance2 = 0.0;
         double.TryParse(comp1.GetComponentInChildren<TextMesh>().text, out resistance1);
         double.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
-        return ((resistance1 + resistance2)/2).ToString();
+        return ((resistance1 + resistance2) / 2).ToString();
     }
 
     public static void TransformParallel(GameObject resistor1, GameObject resistor2)
@@ -90,145 +81,38 @@ public class TransformHandler : MonoBehaviour {
         var prevComp1 = deComp1.GetPreviousComponent();
         var nextComp1 = deComp1.GetNextComponent();
         var prevComp2 = deComp2.GetPreviousComponent();
-		var nextComp2 = deComp2.GetNextComponent();
+        var nextComp2 = deComp2.GetNextComponent();
 
         var actionText = "Parallel Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
         ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
         List<Wire> wire = new List<Wire>();
-        if(prevComp1.Count == 2)
+        var component = CircuitHandler.GetDoubledEndedObject(prevComp1[0]);
+        if (component.GetNextComponent().Contains(resistor1))
         {
-            foreach (var item in prevComp2)
-            {
-                var component = CircuitHandler.GetDoubledEndedObject(item);
-                if (component.GetNextComponent().Contains(resistor2))
-                {
-                    component.GetNextComponent().Remove(resistor2);
-                }
-            }
-            foreach (var item in nextComp2)
-            {
-                var component = CircuitHandler.GetDoubledEndedObject(item);
-                if (component.GetPreviousComponent().Contains(resistor2))
-                {
-                    component.GetPreviousComponent().Remove(resistor2);
-                }
-            }
-
-            foreach (var item in CircuitHandler.wires)
-            {
-                var comp1 = item.GetComponent1();
-                var comp2 = item.GetComponent2();
-
-                if (comp1 == resistor2 || comp2 == resistor2)
-                {
-                    Destroy(item.GetWireObject());
-                    wire.Add(item);
-                }
-            }
-            resistor1.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-            Destroy(resistor2);
+            component.GetNextComponent().Remove(resistor1);
         }
-        else if (prevComp2.Count == 2)
+
+        component = CircuitHandler.GetDoubledEndedObject(nextComp1[0]);
+        if (component.GetPreviousComponent().Contains(resistor1))
         {
-            foreach (var item in prevComp1)
-            {
-                var component = CircuitHandler.GetDoubledEndedObject(item);
-                if (component.GetNextComponent().Contains(resistor1))
-                {
-                    component.GetNextComponent().Remove(resistor1);
-                }
-            }
-            foreach (var item in nextComp1)
-            {
-                var component = CircuitHandler.GetDoubledEndedObject(item);
-                if (component.GetPreviousComponent().Contains(resistor1))
-                {
-                    component.GetPreviousComponent().Remove(resistor1);
-                }
-            }
-
-            foreach (var item in CircuitHandler.wires)
-            {
-                var comp1 = item.GetComponent1();
-                var comp2 = item.GetComponent2();
-
-                if (comp1 == resistor1 || comp2 == resistor1)
-                {
-                    Destroy(item.GetWireObject());
-                    wire.Add(item);
-                }
-            }
-            resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-            Destroy(resistor1);
+            component.GetPreviousComponent().Remove(resistor1);
         }
-        else if (nextComp1.Count == 0)
+
+
+        foreach (var item in CircuitHandler.wires)
         {
-            deComp2.GetNextComponent().Remove(resistor1);
-            foreach (var item in CircuitHandler.wires)
-            {
-                var comp1 = item.GetComponent1();
-                var comp2 = item.GetComponent2();
+            var comp1 = item.GetComponent1();
+            var comp2 = item.GetComponent2();
 
-                if ((comp1 == resistor1 && comp2 == resistor2) || (comp1 == resistor2 && comp2 == resistor1))
-                {
-                    Destroy(item.GetWireObject());
-                    wire.Add(item);
-                }
+            if (comp1 == resistor1 || comp2 == resistor1)
+            {
+                Destroy(item.GetWireObject());
+                wire.Add(item);
             }
-            resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-            Destroy(resistor1);
         }
-        else if (nextComp2.Count == 0)
-		{
-			deComp1.GetNextComponent().Remove(resistor2);
-			foreach (var item in CircuitHandler.wires)
-			{
-				var comp1 = item.GetComponent1();
-				var comp2 = item.GetComponent2();
-
-				if ((comp1 == resistor1 && comp2 == resistor2) || (comp1 == resistor2 && comp2 == resistor1))
-				{
-					Destroy(item.GetWireObject());
-					wire.Add(item);
-				}
-			}
-            resistor1.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-            Destroy(resistor2);
-        }
-        else
-        {
-            foreach (var item in prevComp1)
-            {
-                var component = CircuitHandler.GetDoubledEndedObject(item);
-                if (component.GetNextComponent().Contains(resistor1))
-                {
-                    component.GetNextComponent().Remove(resistor1);
-                }
-            }
-            foreach (var item in nextComp1)
-            {
-                var component = CircuitHandler.GetDoubledEndedObject(item);
-                if (component.GetPreviousComponent().Contains(resistor1))
-                {
-                    component.GetPreviousComponent().Remove(resistor1);
-                }
-            }
-
-            foreach (var item in CircuitHandler.wires)
-            {
-                var comp1 = item.GetComponent1();
-                var comp2 = item.GetComponent2();
-
-                if (comp1 == resistor1 || comp2 == resistor1)
-                {
-                    Destroy(item.GetWireObject());
-                    wire.Add(item);
-                }
-            }
-            resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-            Destroy(resistor1);
-        }
+        resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
+        Destroy(resistor1);
 
         foreach (var item in wire)
         {
@@ -245,7 +129,7 @@ public class TransformHandler : MonoBehaviour {
         TransformComplete(resistor1, resistor2);
     }
 
-    static void  TransformComplete(GameObject resistor1, GameObject resistor2)
+    static void TransformComplete(GameObject resistor1, GameObject resistor2)
     {
         resistor1.GetComponent<ComponentsScript>().SetIsSelected(false);
         resistor2.GetComponent<ComponentsScript>().SetIsSelected(false);
