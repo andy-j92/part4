@@ -24,13 +24,13 @@ public class LoadRandomCircuit : MonoBehaviour {
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);
-        filename = circuits[currentCircuitIndex].Name;
         StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
     }
 
     IEnumerator DrawCircuit(FileInfo file)
     {
         StreamReader reader = file.OpenText();
+        filename = file.Name;
         resistors = new List<GameObject>();
         string text;
         int resistorCount = 1;
