@@ -78,6 +78,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         yield return new WaitForSeconds(0.1f);
         new CircuitHandler().StartSetUp();
         DisableScripts();
+
         var equationFile = new DirectoryInfo("Equations").GetFiles(filename + ".txt");
         if (equationFile.Length != 0)
             Debug.Log(new Equation(resistorCount).Calculate(new DirectoryInfo("Equations").GetFiles(filename + ".txt")[0]));

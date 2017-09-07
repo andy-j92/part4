@@ -444,10 +444,10 @@ public class CircuitHandler : MonoBehaviour {
         }
 
         Debug.Log("Saved: " + filename);
-
         var file = File.CreateText(filePath + filename + ".txt");
         file.WriteLine(equation.GetEquation());
         file.Close();
 
+        equation.ClearEquation();
     }
 }

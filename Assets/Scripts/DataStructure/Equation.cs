@@ -5,32 +5,37 @@ using UnityEngine.UI;
 
 public class Equation {
 
-    private StringBuilder equation;
-    private double[] resistances;
+    private StringBuilder _equation;
+    private int _resistorCount;
 
     public Equation()
     {
-        equation = new StringBuilder();
+        _equation = new StringBuilder();
     }
 
     public Equation(int resistorCount)
     {
-        resistances = new double[resistorCount];
+        _resistorCount = resistorCount;
+    }
+
+    public void ClearEquation()
+    {
+        _equation = new StringBuilder();
     }
 
     public void Series(GameObject resistor1, GameObject resistor2)
     {
-        equation.AppendLine(resistor1.tag + "," + resistor2.tag + ",series");
+        _equation.AppendLine(resistor1.tag + "," + resistor2.tag + ",series");
     }
 
     public void Parallel(GameObject resistor1, GameObject resistor2)
     {
-        equation.AppendLine(resistor1.tag + "," + resistor2.tag + ",parallel");
+        _equation.AppendLine(resistor1.tag + "," + resistor2.tag + ",parallel");
     }
 
     public string GetEquation()
     {
-        return equation.ToString();
+        return _equation.ToString();
     }
 
     private double SeriesCalc(double resistance1, double resistance2)
@@ -55,6 +60,7 @@ public class Equation {
     public double Calculate(FileInfo fileInfo)
     {
         StreamReader reader = fileInfo.OpenText();
+        double[] resistances = new double[_resistorCount];
         string text;
         double result = 0;
         while ((text = reader.ReadLine()) != "")
@@ -88,11 +94,6 @@ public class Equation {
                 resistance2 = resistances[num2];
             }
 
-            foreach (var item in resistances)
-            {
-                Debug.Log(item);
-            }
-            Debug.Log("\n");
             if (action.Equals("series"))
             {
                 result = SeriesCalc(resistance1, resistance2);
@@ -105,7 +106,6 @@ public class Equation {
                 resistances[num1] = result;
                 resistances[num2] = result;
             }
-            //Debug.Log(result);
         }
         return result;
     }
