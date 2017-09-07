@@ -168,29 +168,20 @@ public class CircuitHandler : MonoBehaviour {
 
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
     {
-        var nextComp1 = component1.GetNextComponent();
-
-        DoubleEnded nextComponent = null;
-        foreach (var item in nextComp1)
-        {
-            if (item.tag == "Node")
-                nextComponent = GetDoubledEndedObject(item);
-        }
-        if (nextComponent == null)
-            return null;
+        GameObject currentComponent = component1.GetCurrentComponent();
         //previous component of a resistor is always 1
         GameObject previousComponent = component1.GetPreviousComponent()[0];
-        while (nextComponent.GetCurrentComponent().tag != "EndingNode")
+        while (currentComponent.tag != "EndingNode")
         {
             List<GameObject> connectedComponents = new List<GameObject>();
-            Debug.Log(nextComponent.GetCurrentComponent().GetInstanceID());
-            foreach (var item in nextComponent.GetNextComponent())
+
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetNextComponent())
             {
-                connectedComponents.Add(item);
+                    connectedComponents.Add(item);
             }
-            foreach (var item in nextComponent.GetPreviousComponent())
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetPreviousComponent())
             {
-                connectedComponents.Add(item);
+                    connectedComponents.Add(item);
             }
            
             if (connectedComponents.Count > 2)
@@ -198,14 +189,15 @@ public class CircuitHandler : MonoBehaviour {
             else
             {
                 connectedComponents.Remove(previousComponent);
-                
+                Debug.Log(connectedComponents.Count);
                 if (connectedComponents[0] == component2.GetCurrentComponent())
                     return component1.GetCurrentComponent();
                 else
                 {
-                    previousComponent = nextComponent.GetCurrentComponent();
-                    nextComponent = GetDoubledEndedObject(connectedComponents[0]);
+                    previousComponent = currentComponent;
+                    currentComponent = connectedComponents[0];
                 }
+                    
             }
 
         }
