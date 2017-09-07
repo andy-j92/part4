@@ -14,7 +14,6 @@ public class TransformHandler : MonoBehaviour
 
     public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
-        var deResistor1 = CircuitHandler.GetDoubledEndedObject(resistor1);
         var deResistor2 = CircuitHandler.GetDoubledEndedObject(resistor2);
         //Components in series can only have a single previous component
         var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
@@ -52,6 +51,7 @@ public class TransformHandler : MonoBehaviour
         newWire.transform.rotation = rotation;
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
         resistor2.SetActive(false);
+        CircuitHandler.equation.Series(resistor1, resistor2);
         TransformComplete(resistor1, resistor2);
     }
 
@@ -76,12 +76,9 @@ public class TransformHandler : MonoBehaviour
     public static void TransformParallel(GameObject resistor1, GameObject resistor2)
     {
         var deComp1 = CircuitHandler.GetDoubledEndedObject(resistor1);
-        var deComp2 = CircuitHandler.GetDoubledEndedObject(resistor2);
 
         var prevComp1 = deComp1.GetPreviousComponent();
         var nextComp1 = deComp1.GetNextComponent();
-        var prevComp2 = deComp2.GetPreviousComponent();
-        var nextComp2 = deComp2.GetNextComponent();
 
         var actionText = "Parallel Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
         ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
@@ -107,12 +104,12 @@ public class TransformHandler : MonoBehaviour
 
             if (comp1 == resistor1 || comp2 == resistor1)
             {
-                Destroy(item.GetWireObject());
+                item.GetWireObject().SetActive(false);
                 wire.Add(item);
             }
         }
         resistor2.GetComponentInChildren<TextMesh>().text = CalculateParallelResistance(resistor1, resistor2);
-        Destroy(resistor1);
+        resistor1.SetActive(false);
 
         foreach (var item in wire)
         {
@@ -126,6 +123,7 @@ public class TransformHandler : MonoBehaviour
         newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
         actions.Add(newAction);
 
+        CircuitHandler.equation.Parallel(resistor1, resistor2);
         TransformComplete(resistor1, resistor2);
     }
 

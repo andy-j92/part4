@@ -1,0 +1,6 @@
+Resistor6,Resistor3,parallel
+Resistor2,Resistor3,series
+Resistor2,Resistor4,series
+Resistor1,Resistor2,series
+Resistor5,Resistor1,series
+

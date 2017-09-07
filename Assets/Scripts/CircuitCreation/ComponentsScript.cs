@@ -7,14 +7,11 @@ using UnityEngine.UI;
 public class ComponentsScript : MonoBehaviour {
 
     private bool isSelected;
-    private bool isTriggered;
-    private List<GameObject> nextComponents = new List<GameObject>();
     private List<GameObject> components = new List<GameObject>();
 
     void Start()
     {
         isSelected = false;
-        isTriggered = false;
     }
 
     void Update()

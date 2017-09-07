@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CircuitHandler : MonoBehaviour {
 
-    private GameObject startingComp;
-    private GameObject prevComp;
-    private bool hasMultiple = false;
-    private bool isAdded = false;
     public static List<DoubleEnded> componentOrder = new List<DoubleEnded>();
     public static List<GameObject> components = new List<GameObject>();
     public static List<Wire> wires = new List<Wire>();
@@ -19,11 +16,28 @@ public class CircuitHandler : MonoBehaviour {
 
     public static DoubleEnded selected1 = null;
     public static DoubleEnded selected2 = null;
+    public static Equation equation = new Equation();
+    public bool isSaved;
 
     void Start()
     {
         selected1 = null;
         selected2 = null;
+        isSaved = false;
+    }
+
+    void Update()
+    {
+        int count = 0;
+        foreach (var item in connectedComponents.Keys)
+        {
+            if (item.tag.Contains("Resistor") && item.activeSelf)
+                count++;
+        }
+
+        Debug.Log(count);
+        if (count == 1 && !isSaved)
+            SaveEquation();
     }
 
     public void StartSetUp()
@@ -190,7 +204,6 @@ public class CircuitHandler : MonoBehaviour {
             else
             {
                 connectedComponents.Remove(previousComponent);
-                Debug.Log(connectedComponents.Count);
                 if (connectedComponents[0] == component2.GetCurrentComponent())
                     return component1.GetCurrentComponent();
                 else
@@ -211,7 +224,6 @@ public class CircuitHandler : MonoBehaviour {
             {
                 connectedComponents.Add(item);
             }
-            Debug.Log(currentComponent.tag);
             foreach (var item in GetDoubledEndedObject(currentComponent).GetPreviousComponent())
             {
                 connectedComponents.Add(item);
@@ -222,7 +234,6 @@ public class CircuitHandler : MonoBehaviour {
             else
             {
                 connectedComponents.Remove(previousComponent);
-                Debug.Log(connectedComponents.Count);
                 if (connectedComponents[0] == component2.GetCurrentComponent())
                     return component1.GetCurrentComponent();
                 else
@@ -266,7 +277,7 @@ public class CircuitHandler : MonoBehaviour {
             var total2 = GetDoubledEndedObject(prev2).GetPreviousComponent().Count + GetDoubledEndedObject(prev2).GetNextComponent().Count;
             total2 += GetDoubledEndedObject(next2).GetPreviousComponent().Count + GetDoubledEndedObject(next2).GetNextComponent().Count;
 
-            Debug.Log(total1 + " : " + total2);
+            //delete resistor with less total connections, avoids difficult transformation
             if (total1 > total2)
                 TransformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
             else if(total2 > total1)
@@ -392,7 +403,6 @@ public class CircuitHandler : MonoBehaviour {
                 }
             }
         }
-
     }
 
     IEnumerator ShowFeedBack(string feedbackText)
@@ -401,6 +411,23 @@ public class CircuitHandler : MonoBehaviour {
         feedback.GetComponent<Text>().text = feedbackText;
         yield return new WaitForSeconds(2);
         feedback.GetComponent<Text>().text = "";
+    }
+
+    void SaveEquation()
+    {
+        var filePath = "Equations/";
+        if (!Directory.Exists(filePath))
+            Directory.CreateDirectory(filePath);
+
+        var filename = LoadRandomCircuit.filename;
+        if (File.Exists(filePath + filename + ".txt"))
+        {
+            return;
+        }
+
+        var file = File.CreateText(filePath + filename + ".txt");
+        file.WriteLine(equation.GetEquation());
+        file.Close();
 
     }
 }

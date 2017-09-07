@@ -12,21 +12,19 @@ public class LoadRandomCircuit : MonoBehaviour {
     public GameObject action;
 
     private int currentCircuitIndex = 0;
-    private int numFiles = 0;
     private FileInfo[] circuits;
-    private GameObject circuitPanel;
     private List<GameObject> resistors;
+    public static string filename;
 
 
 
     void Start()
     {
         wire.GetComponent<BoxCollider2D>().isTrigger = true;
-        circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
-        numFiles = circuits.Length;
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);
+        filename = circuits[currentCircuitIndex].Name;
         StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
     }
 
