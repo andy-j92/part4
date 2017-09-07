@@ -1,0 +1,4 @@
+Resistor1,Resistor3,series
+Resistor4,Resistor2,series
+Resistor4,Resistor1,series
+

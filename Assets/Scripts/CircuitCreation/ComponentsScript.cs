@@ -38,19 +38,6 @@ public class ComponentsScript : MonoBehaviour {
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
             {
-                List<GameObject> va = CircuitHandler.GetDoubledEndedObject(gameObject).GetNextComponent();
-                List<GameObject> ca = CircuitHandler.GetDoubledEndedObject(gameObject).GetPreviousComponent();
-
-                Debug.Log("Current: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetCurrentComponent().GetInstanceID());
-                foreach (var item in ca)
-                {
-                    Debug.Log("Prev: " + item.GetInstanceID());
-                }
-                foreach (var item in va)
-                {
-                    Debug.Log("Next: " + item.GetInstanceID());
-                }
-
                 if (CircuitHandler.selected1 == null)
                 {
                     CircuitHandler.selected1 = CircuitHandler.GetDoubledEndedObject(gameObject);

@@ -35,7 +35,6 @@ public class CircuitHandler : MonoBehaviour {
                 count++;
         }
 
-        Debug.Log(count);
         if (count == 1 && !isSaved)
             SaveEquation();
     }
@@ -268,10 +267,21 @@ public class CircuitHandler : MonoBehaviour {
         }
         if(isParallel1 || isParallel2)
         {
+            //when resistors have two prevs with no nexts
             var prev1 = selected1.GetPreviousComponent()[0];
-            var next1 = selected1.GetNextComponent()[0];
+            GameObject next1 = null;
+            if (selected1.GetNextComponent().Count != 0)
+                next1 = selected1.GetNextComponent()[0];
+            else
+                next1 = selected1.GetPreviousComponent()[1];
+
             var prev2 = selected2.GetPreviousComponent()[0];
-            var next2 = selected2.GetNextComponent()[0];
+            GameObject next2 = null;
+            if (selected2.GetNextComponent().Count != 0)
+                next2 = selected2.GetNextComponent()[0];
+            else
+                next2 = selected2.GetPreviousComponent()[1];
+
             var total1 = GetDoubledEndedObject(prev1).GetPreviousComponent().Count + GetDoubledEndedObject(prev1).GetNextComponent().Count;
             total1 += GetDoubledEndedObject(next1).GetPreviousComponent().Count + GetDoubledEndedObject(next1).GetNextComponent().Count;
             var total2 = GetDoubledEndedObject(prev2).GetPreviousComponent().Count + GetDoubledEndedObject(prev2).GetNextComponent().Count;
@@ -291,11 +301,22 @@ public class CircuitHandler : MonoBehaviour {
 
     bool CheckParallel(DoubleEnded component1, DoubleEnded component2)
     {
-        //resistors have a single prev and next node
+        //resistors normally have a single prev and next node
         var prevNode1 = component1.GetPreviousComponent()[0];
-        var nextNode1 = component1.GetNextComponent()[0];
+        GameObject nextNode1 = null;
+        //found out that it is possible to have two prevs with no next, hack fix
+        if (component1.GetNextComponent().Count != 0)
+            nextNode1 = component1.GetNextComponent()[0];
+        else
+            nextNode1 = component1.GetPreviousComponent()[1];
+
         var prevNode2 = component2.GetPreviousComponent()[0];
-        var nextNode2 = component2.GetNextComponent()[0];
+        GameObject nextNode2 = null;
+        if (component2.GetNextComponent().Count != 0)
+            nextNode2 = component2.GetNextComponent()[0];
+        else
+            nextNode2 = component2.GetPreviousComponent()[1];
+
         bool foundComp2 = false;
         
         Queue<GameObject> nextNodes = new Queue<GameObject>();
@@ -331,9 +352,6 @@ public class CircuitHandler : MonoBehaviour {
                 foundComp2 = true;
                 break;
             }
-            //go through the nodes, stop when reaching a resistor that is not component2.
-            //go through all the possible node paths until component2 is reached.
-            //then check if the next node of component 2 meets next node of componen1
         }
 
         backwards = false;
@@ -425,9 +443,11 @@ public class CircuitHandler : MonoBehaviour {
             return;
         }
 
+        Debug.Log("Saved: " + filename);
         var file = File.CreateText(filePath + filename + ".txt");
         file.WriteLine(equation.GetEquation());
         file.Close();
 
+        equation.ClearEquation();
     }
 }
