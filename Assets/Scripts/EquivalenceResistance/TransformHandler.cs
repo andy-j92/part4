@@ -57,10 +57,10 @@ public class TransformHandler : MonoBehaviour
 
     static string CalculateSeriesResistance(GameObject comp1, GameObject comp2)
     {
-        int resistance1 = 0;
-        int resistance2 = 0;
-        int.TryParse(comp1.GetComponentInChildren<TextMesh>().text, out resistance1);
-        int.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
+        double resistance1 = 0;
+        double resistance2 = 0;
+        double.TryParse(comp1.GetComponentInChildren<TextMesh>().text, out resistance1);
+        double.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
         return (resistance1 + resistance2).ToString();
     }
 

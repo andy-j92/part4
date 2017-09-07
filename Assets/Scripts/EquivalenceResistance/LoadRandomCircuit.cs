@@ -16,8 +16,6 @@ public class LoadRandomCircuit : MonoBehaviour {
     private List<GameObject> resistors;
     public static string filename;
 
-
-
     void Start()
     {
         wire.GetComponent<BoxCollider2D>().isTrigger = true;
@@ -34,13 +32,8 @@ public class LoadRandomCircuit : MonoBehaviour {
         resistors = new List<GameObject>();
         string text;
         int resistorCount = 1;
-        while((text = reader.ReadLine()) != null)
+        while((text = reader.ReadLine()) != "")
         {
-            if (text == "")
-            {
-                break;
-            }
-
             var info = text.Split(' ');
             var type = info[0];
             Vector3 position = GetPosition(info);
@@ -81,10 +74,13 @@ public class LoadRandomCircuit : MonoBehaviour {
 
         }
         reader.Close();
+        
         yield return new WaitForSeconds(0.1f);
         new CircuitHandler().StartSetUp();
         DisableScripts();
-
+        var equationFile = new DirectoryInfo("Equations").GetFiles(filename + ".txt");
+        if (equationFile.Length != 0)
+            Debug.Log(new Equation(resistorCount).Calculate(new DirectoryInfo("Equations").GetFiles(filename + ".txt")[0]));
     }
 
     Vector3 GetPosition(string[] info)
