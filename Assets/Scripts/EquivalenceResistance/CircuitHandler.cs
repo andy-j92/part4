@@ -174,7 +174,8 @@ public class CircuitHandler : MonoBehaviour {
         while (currentComponent.tag != "EndingNode")
         {
             List<GameObject> connectedComponents = new List<GameObject>();
-
+            if (currentComponent.tag == "StartingNode")
+                break;
             foreach (var item in GetDoubledEndedObject(currentComponent).GetNextComponent())
             {
                     connectedComponents.Add(item);
@@ -197,29 +198,82 @@ public class CircuitHandler : MonoBehaviour {
                     previousComponent = currentComponent;
                     currentComponent = connectedComponents[0];
                 }
-                    
             }
 
         }
-        
+        previousComponent = component1.GetNextComponent()[0];
+        currentComponent = component1.GetCurrentComponent();
+        while (currentComponent.tag != "EndingNode")
+        {
+            List<GameObject> connectedComponents = new List<GameObject>();
+
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetNextComponent())
+            {
+                connectedComponents.Add(item);
+            }
+            Debug.Log(currentComponent.tag);
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetPreviousComponent())
+            {
+                connectedComponents.Add(item);
+            }
+
+            if (connectedComponents.Count > 2)
+                return null;
+            else
+            {
+                connectedComponents.Remove(previousComponent);
+                Debug.Log(connectedComponents.Count);
+                if (connectedComponents[0] == component2.GetCurrentComponent())
+                    return component1.GetCurrentComponent();
+                else
+                {
+                    previousComponent = currentComponent;
+                    currentComponent = connectedComponents[0];
+                }
+            }
+
+        }
         return null;
     }
 
     public void ParallelTransform()
     {
+        bool isParallel1 = false;
+        bool isParallel2 = false;
         if (selected1 != null && selected2 != null)
         {
             if (CheckParallel(selected1, selected2))
             {
-                TransformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
+                isParallel1 = true;
             }
             else if (CheckParallel(selected2, selected1))
             {
-                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
+                isParallel2 = true;
             }
             else
             {
                 StartCoroutine(ShowFeedBack("The Resistors are not in parallel."));
+            }
+        }
+        if(isParallel1 || isParallel2)
+        {
+            var prev1 = selected1.GetPreviousComponent()[0];
+            var next1 = selected1.GetNextComponent()[0];
+            var prev2 = selected2.GetPreviousComponent()[0];
+            var next2 = selected2.GetNextComponent()[0];
+            var total1 = GetDoubledEndedObject(prev1).GetPreviousComponent().Count + GetDoubledEndedObject(prev1).GetNextComponent().Count;
+            total1 += GetDoubledEndedObject(next1).GetPreviousComponent().Count + GetDoubledEndedObject(next1).GetNextComponent().Count;
+            var total2 = GetDoubledEndedObject(prev2).GetPreviousComponent().Count + GetDoubledEndedObject(prev2).GetNextComponent().Count;
+            total2 += GetDoubledEndedObject(next2).GetPreviousComponent().Count + GetDoubledEndedObject(next2).GetNextComponent().Count;
+
+            Debug.Log(total1 + " : " + total2);
+            if (total1 > total2)
+                TransformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
+            else if(total2 > total1)
+                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
+            else
+            {
+                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
         }
     }
