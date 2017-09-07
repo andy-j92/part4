@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CircuitHandler : MonoBehaviour {
 
-    private GameObject startingComp;
-    private GameObject prevComp;
-    private bool hasMultiple = false;
-    private bool isAdded = false;
     public static List<DoubleEnded> componentOrder = new List<DoubleEnded>();
     public static List<GameObject> components = new List<GameObject>();
     public static List<Wire> wires = new List<Wire>();
@@ -17,8 +14,31 @@ public class CircuitHandler : MonoBehaviour {
     private Queue<GameObject> connectionQueue = new Queue<GameObject>();
     private List<GameObject> processedComponents = new List<GameObject>();
 
-    public static DoubleEnded selected1;
-    public static DoubleEnded selected2;
+    public static DoubleEnded selected1 = null;
+    public static DoubleEnded selected2 = null;
+    public static Equation equation = new Equation();
+    public bool isSaved;
+
+    void Start()
+    {
+        selected1 = null;
+        selected2 = null;
+        isSaved = false;
+    }
+
+    void Update()
+    {
+        int count = 0;
+        foreach (var item in connectedComponents.Keys)
+        {
+            if (item.tag.Contains("Resistor") && item.activeSelf)
+                count++;
+        }
+
+        Debug.Log(count);
+        if (count == 1 && !isSaved)
+            SaveEquation();
+    }
 
     public void StartSetUp()
     {
@@ -162,174 +182,201 @@ public class CircuitHandler : MonoBehaviour {
 
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
     {
-        var nextComp1 = component1.GetNextComponent();
-        var prevComp1 = component1.GetPreviousComponent();
-        var nextComp2 = component2.GetNextComponent();
-        var prevComp2 = component2.GetPreviousComponent();
-
-        GameObject prevNode = null;
-        foreach (var item in prevComp1)
+        GameObject currentComponent = component1.GetCurrentComponent();
+        //previous component of a resistor is always 1
+        GameObject previousComponent = component1.GetPreviousComponent()[0];
+        while (currentComponent.tag != "EndingNode")
         {
-            if (item.tag == "Node")
-                prevNode = item;
-        }
-
-        if (nextComp1.Count != 1)
-            return null;
-        else if (prevNode != null && GetDoubledEndedObject(prevNode).GetNextComponent().Count != 1)
-            return null;
-        else if (nextComp1.Count == 1 )
-        {
-            if (nextComp1.Contains(component2.GetCurrentComponent()))
-                return component1.GetCurrentComponent();
-            else if (GetDoubledEndedObject(nextComp1[0]).GetNextComponent().Contains(component2.GetCurrentComponent()))
-                return component1.GetCurrentComponent();
-            else if (nextComp2.Count == 1 && nextComp2[0] == prevComp1[0])
-                return component1.GetCurrentComponent();
-            else if (nextComp2.Count == 1 && nextComp2[0] == nextComp1[0])
-                return component1.GetCurrentComponent();
-            else if (prevComp2.Count == 1 && prevComp2[0] == nextComp1[0])
-                return component1.GetCurrentComponent();
+            List<GameObject> connectedComponents = new List<GameObject>();
+            if (currentComponent.tag == "StartingNode")
+                break;
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetNextComponent())
+            {
+                    connectedComponents.Add(item);
+            }
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetPreviousComponent())
+            {
+                    connectedComponents.Add(item);
+            }
+           
+            if (connectedComponents.Count > 2)
+                return null;
             else
             {
-                var component = component1.GetNextComponent()[0];
-                var nextComp = GetDoubledEndedObject(component).GetNextComponent();
-                while (nextComp.Count == 1)
-                {
-                    if (nextComp.Contains(component2.GetCurrentComponent()))
-                        return component;
-                    else
-                    {
-                        component = nextComp[0];
-                        nextComp = GetDoubledEndedObject(component).GetNextComponent();
-                    }
-                }
-            }
-        }
-        else
-        {
-            var component = component1.GetNextComponent()[0];
-            var nextComp = GetDoubledEndedObject(component).GetNextComponent();
-            while (nextComp.Count == 1)
-            {
-                if (nextComp.Contains(component2.GetCurrentComponent()))
-                    return component;
+                connectedComponents.Remove(previousComponent);
+                if (connectedComponents[0] == component2.GetCurrentComponent())
+                    return component1.GetCurrentComponent();
                 else
                 {
-                    component = nextComp[0];
-                    nextComp = GetDoubledEndedObject(component).GetNextComponent();
+                    previousComponent = currentComponent;
+                    currentComponent = connectedComponents[0];
                 }
             }
+
+        }
+        previousComponent = component1.GetNextComponent()[0];
+        currentComponent = component1.GetCurrentComponent();
+        while (currentComponent.tag != "EndingNode")
+        {
+            List<GameObject> connectedComponents = new List<GameObject>();
+
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetNextComponent())
+            {
+                connectedComponents.Add(item);
+            }
+            foreach (var item in GetDoubledEndedObject(currentComponent).GetPreviousComponent())
+            {
+                connectedComponents.Add(item);
+            }
+
+            if (connectedComponents.Count > 2)
+                return null;
+            else
+            {
+                connectedComponents.Remove(previousComponent);
+                if (connectedComponents[0] == component2.GetCurrentComponent())
+                    return component1.GetCurrentComponent();
+                else
+                {
+                    previousComponent = currentComponent;
+                    currentComponent = connectedComponents[0];
+                }
+            }
+
         }
         return null;
     }
 
     public void ParallelTransform()
     {
+        bool isParallel1 = false;
+        bool isParallel2 = false;
         if (selected1 != null && selected2 != null)
         {
             if (CheckParallel(selected1, selected2))
             {
-                TransformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
+                isParallel1 = true;
             }
             else if (CheckParallel(selected2, selected1))
             {
-                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
+                isParallel2 = true;
             }
             else
             {
                 StartCoroutine(ShowFeedBack("The Resistors are not in parallel."));
             }
         }
+        if(isParallel1 || isParallel2)
+        {
+            var prev1 = selected1.GetPreviousComponent()[0];
+            var next1 = selected1.GetNextComponent()[0];
+            var prev2 = selected2.GetPreviousComponent()[0];
+            var next2 = selected2.GetNextComponent()[0];
+            var total1 = GetDoubledEndedObject(prev1).GetPreviousComponent().Count + GetDoubledEndedObject(prev1).GetNextComponent().Count;
+            total1 += GetDoubledEndedObject(next1).GetPreviousComponent().Count + GetDoubledEndedObject(next1).GetNextComponent().Count;
+            var total2 = GetDoubledEndedObject(prev2).GetPreviousComponent().Count + GetDoubledEndedObject(prev2).GetNextComponent().Count;
+            total2 += GetDoubledEndedObject(next2).GetPreviousComponent().Count + GetDoubledEndedObject(next2).GetNextComponent().Count;
+
+            //delete resistor with less total connections, avoids difficult transformation
+            if (total1 > total2)
+                TransformHandler.TransformParallel(selected1.GetCurrentComponent(), selected2.GetCurrentComponent());
+            else if(total2 > total1)
+                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
+            else
+            {
+                TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
+            }
+        }
     }
 
     bool CheckParallel(DoubleEnded component1, DoubleEnded component2)
     {
-        var prevComp1 = component1.GetPreviousComponent();
-        var nextComp1 = component1.GetNextComponent();
-        var prevComp2 = component2.GetPreviousComponent();
-        var nextComp2 = component2.GetNextComponent();
-
-        DoubleEnded prevNode1 = null;
-        DoubleEnded nextNode1 = null;
-        DoubleEnded prevNode2 = null;
-        DoubleEnded nextNode2 = null;
-
-        foreach (var prev in prevComp1)
+        //resistors have a single prev and next node
+        var prevNode1 = component1.GetPreviousComponent()[0];
+        var nextNode1 = component1.GetNextComponent()[0];
+        var prevNode2 = component2.GetPreviousComponent()[0];
+        var nextNode2 = component2.GetNextComponent()[0];
+        bool foundComp2 = false;
+        
+        Queue<GameObject> nextNodes = new Queue<GameObject>();
+        bool backwards = false;
+        nextNodes.Enqueue(prevNode1);
+        while (nextNodes.Count > 0)
         {
-            if (prev.tag == "Node")
-                prevNode1 = GetDoubledEndedObject(prev);
-        }
-        foreach (var next in nextComp1)
-        {
-            if (next.tag == "Node")
-                nextNode1 = GetDoubledEndedObject(next);
-        }
-        foreach (var prev in prevComp2)
-        {
-            if (prev.tag == "Node")
-                prevNode2 = GetDoubledEndedObject(prev);
-        }
-        foreach (var next in nextComp2)
-        {
-            if (next.tag == "Node")
-                nextNode2 = GetDoubledEndedObject(next);
-        }
-
-        if (nextComp1.Contains(component2.GetCurrentComponent()) && component2.GetPreviousComponent()[0] == component1.GetCurrentComponent() && component2.GetNextComponent().Count == 0)
-        {
-            return true;
-        }
-        else if(prevNode1 != null && prevNode1.GetNextComponent().Count > 1)
-        {
-            //R w R w case
-            if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode2.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
+            GameObject nextNode = nextNodes.Dequeue();
+            DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
+            if(currentNode.GetNextComponent().Count == 0)
             {
-                return true;
+                backwards = true;
             }
-            else if (prevNode1.GetNextComponent().Contains(prevNode2.GetCurrentComponent()) && nextNode1.GetNextComponent().Contains(nextNode2.GetCurrentComponent()))
+            if(backwards)
             {
-                return true;
-            }
-            //R R w w case
-            else if (prevNode1.GetNextComponent().Contains(component2.GetCurrentComponent()))
-            {
-                DoubleEnded nextNode = null;
-                if(nextNode2.GetNextComponent().Count == 1 && nextNode2.GetNextComponent()[0].tag == "Node")
-                {
-                    nextNode = GetDoubledEndedObject(nextNode2.GetNextComponent()[0]);
-                    if (nextNode.GetPreviousComponent().Count != 0 && nextNode.GetPreviousComponent().Contains(nextNode1.GetCurrentComponent()))
-                    {
-                        return true;
-                    }
-                }
-            }
-            //R w w R case
-            else
-            {
-                DoubleEnded nextNode = null;
-                foreach (var item in prevNode1.GetNextComponent())
+                foreach (var item in currentNode.GetPreviousComponent())
                 {
                     if (item.tag == "Node")
+                        nextNodes.Enqueue(item);
+                }
+            }
+            else
+            {
+                foreach (var item in currentNode.GetNextComponent())
+                {
+                    if (item.tag == "Node")
+                        nextNodes.Enqueue(item);
+                }
+            }
+
+            if (currentNode.GetNextComponent().Contains(component2.GetCurrentComponent()) || currentNode.GetPreviousComponent().Contains(component2.GetCurrentComponent()))
+            {
+                foundComp2 = true;
+                break;
+            }
+            //go through the nodes, stop when reaching a resistor that is not component2.
+            //go through all the possible node paths until component2 is reached.
+            //then check if the next node of component 2 meets next node of componen1
+        }
+
+        backwards = false;
+        nextNodes = new Queue<GameObject>();
+        if (foundComp2)
+        {
+            nextNodes.Enqueue(nextNode2);
+            nextNodes.Enqueue(prevNode2);
+            while (nextNodes.Count > 0)
+            {
+                GameObject nextNode = nextNodes.Dequeue();
+                DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
+                if (currentNode.GetNextComponent().Count == 0)
+                {
+                    backwards = true;
+                }
+                if (backwards)
+                {
+                    foreach (var item in currentNode.GetPreviousComponent())
                     {
-                        nextNode = GetDoubledEndedObject(item);
+                        if (item.tag == "Node")
+                            nextNodes.Enqueue(item);
                     }
                 }
-                if (nextNode != null && nextNode.GetNextComponent().Count == 1)
+                else
                 {
-                    var nextNextNode = nextNode.GetNextComponent()[0];
-                    if (nextNextNode.tag != "Node")
-                        return false;
-                    else if (GetDoubledEndedObject(nextNextNode).GetPreviousComponent().Contains(nextNode.GetCurrentComponent()))
+                    foreach (var item in currentNode.GetNextComponent())
                     {
-                        return true;
+                        if (item.tag == "Node")
+                            nextNodes.Enqueue(item);
                     }
+                }
+
+                if (currentNode.GetCurrentComponent() == nextNode1)
+                {
+                    return true;
                 }
             }
         }
 
         return false;
     }
+
 
     public static DoubleEnded GetDoubledEndedObject(GameObject component)
     {
@@ -347,7 +394,7 @@ public class CircuitHandler : MonoBehaviour {
     {
         foreach (var key in connectedComponents.Keys)
         {
-            if (key != null && key.tag != "Resistor")
+            if (key != null && !key.tag.Contains("Resistor"))
             {
                 key.GetComponent<BoxCollider2D>().enabled = false;
                 foreach (var child in key.GetComponentsInChildren<BoxCollider2D>())
@@ -356,7 +403,6 @@ public class CircuitHandler : MonoBehaviour {
                 }
             }
         }
-
     }
 
     IEnumerator ShowFeedBack(string feedbackText)
@@ -365,6 +411,23 @@ public class CircuitHandler : MonoBehaviour {
         feedback.GetComponent<Text>().text = feedbackText;
         yield return new WaitForSeconds(2);
         feedback.GetComponent<Text>().text = "";
+    }
+
+    void SaveEquation()
+    {
+        var filePath = "Equations/";
+        if (!Directory.Exists(filePath))
+            Directory.CreateDirectory(filePath);
+
+        var filename = LoadRandomCircuit.filename;
+        if (File.Exists(filePath + filename + ".txt"))
+        {
+            return;
+        }
+
+        var file = File.CreateText(filePath + filename + ".txt");
+        file.WriteLine(equation.GetEquation());
+        file.Close();
 
     }
 }
