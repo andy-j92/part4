@@ -15,6 +15,7 @@ public class LoadRandomCircuit : MonoBehaviour {
     private int numFiles = 0;
     private FileInfo[] circuits;
     private GameObject circuitPanel;
+    private List<GameObject> resistors;
 
 
 
@@ -32,9 +33,9 @@ public class LoadRandomCircuit : MonoBehaviour {
     IEnumerator DrawCircuit(FileInfo file)
     {
         StreamReader reader = file.OpenText();
-
+        resistors = new List<GameObject>();
         string text;
-
+        int resistorCount = 1;
         while((text = reader.ReadLine()) != null)
         {
             if (text == "")
@@ -52,6 +53,9 @@ public class LoadRandomCircuit : MonoBehaviour {
             if(type.Equals("Resistor"))
             {
                 component = Instantiate(resistor, position, Quaternion.identity);
+                component.tag = "Resistor" + resistorCount;
+                resistorCount++;
+                resistors.Add(component);
             }
             else if(type.Equals("Node"))
             {
@@ -152,7 +156,6 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     public void LoadNewCircuit()
     {
-        var resistors = GameObject.FindGameObjectsWithTag("Resistor");
         var nodes = GameObject.FindGameObjectsWithTag("Node");
         var wires = GameObject.FindGameObjectsWithTag("Wire");
 
