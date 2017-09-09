@@ -7,6 +7,8 @@ public class BackButtonHandler : MonoBehaviour {
 
 	public void MoveToGameMenuScreen()
     {
+        CircuitHandler.selected1 = null;
+        CircuitHandler.selected2 = null;
         SceneManager.LoadScene("GameMenu");
     }
 

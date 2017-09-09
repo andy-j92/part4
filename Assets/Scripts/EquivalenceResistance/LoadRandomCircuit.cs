@@ -12,35 +12,32 @@ public class LoadRandomCircuit : MonoBehaviour {
     public GameObject action;
 
     private int currentCircuitIndex = 0;
-    private int numFiles = 0;
     private FileInfo[] circuits;
-    private GameObject circuitPanel;
-
-
+    private List<GameObject> resistors;
+    public static string filename;
 
     void Start()
     {
-        circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
+        wire.GetComponent<BoxCollider2D>().isTrigger = true;
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
-        numFiles = circuits.Length;
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);
+<<<<<<< HEAD
         StartCoroutine(DrawCircuit(circuits[Random.Range(0, numFiles)]));
+=======
+        StartCoroutine(DrawCircuit(circuits[Random.Range(0, circuits.Length)]));
+>>>>>>> 7b146ab47f84e58787303a0aababf62451743540
     }
 
     IEnumerator DrawCircuit(FileInfo file)
     {
         StreamReader reader = file.OpenText();
-
+        filename = file.Name;
+        resistors = new List<GameObject>();
         string text;
-
-        while((text = reader.ReadLine()) != null)
+        int resistorCount = 1;
+        while((text = reader.ReadLine()) != "")
         {
-            if (text == "")
-            {
-                break;
-            }
-
             var info = text.Split(' ');
             var type = info[0];
             Vector3 position = GetPosition(info);
@@ -51,6 +48,9 @@ public class LoadRandomCircuit : MonoBehaviour {
             if(type.Equals("Resistor"))
             {
                 component = Instantiate(resistor, position, Quaternion.identity);
+                component.tag = "Resistor" + resistorCount;
+                resistorCount++;
+                resistors.Add(component);
             }
             else if(type.Equals("Node"))
             {
@@ -78,10 +78,14 @@ public class LoadRandomCircuit : MonoBehaviour {
 
         }
         reader.Close();
+        
         yield return new WaitForSeconds(0.1f);
         new CircuitHandler().StartSetUp();
         DisableScripts();
 
+        var equationFile = new DirectoryInfo("Equations").GetFiles(filename + ".txt");
+        if (equationFile.Length != 0)
+            Debug.Log(new Equation(resistorCount).Calculate(new DirectoryInfo("Equations").GetFiles(filename + ".txt")[0]));
     }
 
     Vector3 GetPosition(string[] info)
@@ -151,7 +155,6 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     public void LoadNewCircuit()
     {
-        var resistors = GameObject.FindGameObjectsWithTag("Resistor");
         var nodes = GameObject.FindGameObjectsWithTag("Node");
         var wires = GameObject.FindGameObjectsWithTag("Wire");
 

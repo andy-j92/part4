@@ -1,0 +1,9 @@
+diff a/Assets/_Scenes/CircuitCreator.unity b/Assets/_Scenes/CircuitCreator.unity	(rejected hunks)
+@@ -3294,7 +3294,6 @@
+       objectReference: {fileID: 0}
+     m_RemovedComponents: []
+   m_ParentPrefab: {fileID: 100100000, guid: dc22cd5cd87c8cf4ca4f4d4f4d8e41a8, type: 2}
+-  m_RootGameObject: {fileID: 36932224}
+   m_IsPrefabParent: 0
+ --- !u!1 &1734221814
+ GameObject:
