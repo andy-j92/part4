@@ -22,7 +22,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);
-        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
+        StartCoroutine(DrawCircuit(circuits[Random.Range(0, circuits.Length)]));
     }
 
     IEnumerator DrawCircuit(FileInfo file)
