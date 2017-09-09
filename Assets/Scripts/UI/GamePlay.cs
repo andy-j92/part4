@@ -16,10 +16,10 @@ public class GamePlay : MonoBehaviour
     public Text time, final;
     public int numQ = 0;
     public Image circuit;
-    public Sprite[] circuits = new Sprite[9];
     public Transform gameOver, goBack;
     public Boolean pause;
     public InputField p1ans, p2ans;
+    public LoadRandomCircuit load = new LoadRandomCircuit();
 
     void Awake()
     {
@@ -27,17 +27,6 @@ public class GamePlay : MonoBehaviour
         one = SelectPlayer.ONE;
         two = SelectPlayer.TWO;
         numplayer = SelectPlayer.PNUM;
-
-        circuits[0] = Resources.Load<Sprite>("circuit/circuitOne");
-        circuits[1] = Resources.Load<Sprite>("circuit/circuitTwo");
-        circuits[2] = Resources.Load<Sprite>("circuit/circuitThree");
-        circuits[3] = Resources.Load<Sprite>("circuit/circuitFour");
-        circuits[4] = Resources.Load<Sprite>("circuit/circuitFive");
-        circuits[5] = Resources.Load<Sprite>("circuit/circuitSix");
-        circuits[6] = Resources.Load<Sprite>("circuit/circuitSeven");
-        circuits[7] = Resources.Load<Sprite>("circuit/circuitEight");
-        circuits[8] = Resources.Load<Sprite>("circuit/circuitNine");
-
 
         if (numplayer == 1)
         {
@@ -47,7 +36,7 @@ public class GamePlay : MonoBehaviour
             {
                 case 1:
                     playerOne.image.sprite = Resources.Load<Sprite>("chara/CAP");
-                    //playerOne.gameObject.GetComponent<Animator>() = Resources.Load<Animator>("cahra.cao");
+                    //playerOne.gameObject.GetComponents<Animator> = (Resources.Load<Animator>("cahra.cao"));
                     break;
                 case 2:
                     playerOne.image.sprite = Resources.Load<Sprite>("chara/LED");
@@ -104,9 +93,8 @@ public class GamePlay : MonoBehaviour
     void Start()
     {
         gameOver.gameObject.SetActive(false);
-        circuit.sprite = circuits[0];
         help.text = " < Objective >: Calculate and Enter the correct equvialent resistance of the circuit. \n < Score System >: Player to answer correct will < +score >. \n IF, both players answer correct within the give time, first person to answer will gain extra points. \n \n<EXIT> : | esc | ";
-       InvokeRepeating("decreaseTimeRemaining", 1 , 1);
+        InvokeRepeating("decreaseTimeRemaining", 1, 1);
     }
 
     private void Update()
@@ -116,7 +104,7 @@ public class GamePlay : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             goBack.gameObject.SetActive(true);
-            //stopTimer
+            CancelInvoke();
         }
 
         if (timer == 0)
@@ -126,8 +114,8 @@ public class GamePlay : MonoBehaviour
             if (numQ == 2)
             {
                 timer = 0;
-                pause = true;
                 gameOver.gameObject.SetActive(true);
+                CancelInvoke();
 
                 if (numplayer == 1)
                 {
@@ -142,7 +130,7 @@ public class GamePlay : MonoBehaviour
 
             else
             {
-                circuit.sprite = circuits[numQ];
+                load.NextCircuit();
                 timer = 20;
             }
         }
@@ -159,5 +147,16 @@ public class GamePlay : MonoBehaviour
     public void HELP()
     {
         state = !state;
+    }
+
+    public void buttonYes()
+    {
+        SceneManager.LoadScene("GameMenu");
+    }
+
+    public void buttonNo()
+    {
+        goBack.gameObject.SetActive(false);
+        InvokeRepeating("decreaseTimeRemaining", 1, 1);
     }
 }
