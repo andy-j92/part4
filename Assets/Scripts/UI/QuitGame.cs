@@ -8,8 +8,6 @@ public class QuitGame : MonoBehaviour {
 	
 	public Transform goBack;
 
-    public Button yes, no;
-
     public void buttonYes()
     {
         SceneManager.LoadScene("GameMenu");

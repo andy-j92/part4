@@ -13,5 +13,11 @@ public class Resistor : MonoBehaviour {
             value.text = Random.Range(5, 25).ToString();
             // change Random range value
         }
+
+        else if(SceneManager.GetActiveScene().name.Equals("PlayScreen"))
+        {
+            var value = gameObject.GetComponent<TextMesh>();
+            value.text = Random.Range(5, 25).ToString();
+        }
 	}
 }
