@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ConnectionHandler : MonoBehaviour {
 
     public static List<GameObject> circuitComponents;
+    public static List<Wire> wires;
     public GameObject wire;
     public GameObject node;
     public float multiplier;
@@ -23,8 +24,10 @@ public class ConnectionHandler : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        wire.GetComponent<BoxCollider2D>().isTrigger = false;
         templateActive = false;
         circuitComponents = new List<GameObject>();
+        wires = new List<Wire>();
         connectionFeedback = GameObject.FindGameObjectWithTag("ConnectionFeedback");
         connectionFeedback.SetActive(false);
 
@@ -58,64 +61,90 @@ public class ConnectionHandler : MonoBehaviour {
         var pos1 = connector1.transform.position;
         var pos2 = connector2.transform.position;
 
-        var wirePos = (connector1.transform.position + connector2.transform.position)/2;
-        var parentTag1 = connector1.transform.parent.gameObject.tag;
-        var parentTag2 = connector2.transform.parent.gameObject.tag;
-        var xDiff = Mathf.Round(pos1.x - pos2.x);
-        var yDiff = Mathf.Round(pos1.y - pos2.y);
+        var x = (connector1.transform.position.x + connector2.transform.position.x) / 2;
+        var y = (connector1.transform.position.y + connector2.transform.position.y) / 2;
+        var z = 2.0f;
+        var wirePos = new Vector3(x, y, z);
+        var parent1 = connector1.transform.parent.gameObject;
+        var parent2 = connector2.transform.parent.gameObject;
+        var xDiff = pos1.x - pos2.x;
+        var yDiff = pos1.y - pos2.y;
 
-        if (connector1.transform.parent.gameObject.tag == "StartingNode" && connector2.transform.parent.gameObject.tag == "EndingNode" ||
-            connector2.transform.parent.gameObject.tag == "StartingNode" && connector1.transform.parent.gameObject.tag == "EndingNode")
+        if (parent1.tag == "StartingNode" && parent2.tag == "EndingNode" ||
+            parent2.tag == "StartingNode" && parent1.tag == "EndingNode")
         {
             ResetConnectors(connector1, connector2);
             StartCoroutine(ShowFeedback("Starting node and Ending node cannot be connected."));
             return;
         }
 
-        if(connector1.transform.parent.tag == "Resistor" && connector2.transform.parent.tag == "Resistor")
+        if (parent1.gameObject == parent2.gameObject)
+        {
+            ResetConnectors(connector1, connector2);
+            StartCoroutine(ShowFeedback("You cannot connect connectors from the same component."));
+            return;
+        }
+
+        if (parent1.tag == "Resistor" && parent2.tag == "Resistor")
         {
             ResetConnectors(connector1, connector2);
             StartCoroutine(ShowFeedback("Resistors must be connected using nodes."));
             return;
         }
 
-        Debug.Log(Mathf.Abs(xDiff));
-        Debug.Log(Mathf.Abs(yDiff));
-
-        if (Mathf.Abs(xDiff) != 0 && Mathf.Abs(yDiff) != 0)
+        if (!IsCorrectConnector(xDiff, yDiff))
         {
             ResetConnectors(connector1, connector2);
             StartCoroutine(ShowFeedback("Two components must be on the same axis position."));
             return;
         }
 
+        if (connector1.tag == connector2.tag)
+        {
+            ResetConnectors(connector1, connector2);
+            StartCoroutine(ShowFeedback("Invalid connection. Double check the selected connectors."));
+            return;
+        }
+
+        foreach (var item in wires)
+        {
+            var comp1 = item.GetComponent1();
+            var comp2 = item.GetComponent2();
+            if ((parent1 == comp1 || parent1 == comp2) && (parent2 == comp1 || parent2 == comp2))
+            {
+                ResetConnectors(connector1, connector2);
+                StartCoroutine(ShowFeedback("Two components are already connected."));
+                return;
+            }
+        }
         if (xDiff < 0)
         {
             newWire = Instantiate(wire, wirePos, Quaternion.identity);
-            scale = isNode(parentTag1, parentTag2) ? Mathf.Abs(pos1.x - pos2.x) * multiplier + 0.2f : Mathf.Abs(pos1.x - pos2.x) * multiplier;
+            scale = isNode(parent1.tag, parent2.tag) ? Mathf.Abs(pos1.x - pos2.x) * multiplier + 0.2f : Mathf.Abs(pos1.x - pos2.x) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
 
         }
         else if(xDiff > 0)
         {
             newWire = Instantiate(wire, wirePos, Quaternion.Euler(0, 0, 180f));
-            scale = isNode(parentTag1, parentTag2) ? Mathf.Abs(pos1.x - pos2.x) * multiplier + 0.2f : Mathf.Abs(pos1.x - pos2.x) * multiplier;
+            scale = isNode(parent1.tag, parent2.tag) ? Mathf.Abs(pos1.x - pos2.x) * multiplier + 0.2f : Mathf.Abs(pos1.x - pos2.x) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
         else if(yDiff < 0)
         {
             newWire = Instantiate(wire, wirePos, Quaternion.Euler(0, 0, 90f));
-            scale = isNode(parentTag1, parentTag2) ? Mathf.Abs(pos1.y - pos2.y) * multiplier + 0.2f : Mathf.Abs(pos1.y - pos2.y) * multiplier;
+            scale = isNode(parent1.tag, parent2.tag) ? Mathf.Abs(pos1.y - pos2.y) * multiplier + 0.2f : Mathf.Abs(pos1.y - pos2.y) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
         else if (yDiff > 0)
         {
             newWire = Instantiate(wire, wirePos, Quaternion.Euler(0, 0, 270f));
-            scale = isNode(parentTag1, parentTag2) ? Mathf.Abs(pos1.y - pos2.y) * multiplier + 0.2f : Mathf.Abs(pos1.y - pos2.y) * multiplier;
+            scale = isNode(parent1.tag, parent2.tag) ? Mathf.Abs(pos1.y - pos2.y) * multiplier + 0.2f : Mathf.Abs(pos1.y - pos2.y) * multiplier;
             newWire.transform.localScale = new Vector3(scale, 1, 1);
         }
 
         circuitComponents.Add(newWire);
+        wires.Add(new Wire(newWire, connector1.transform.parent.gameObject, connector2.transform.parent.gameObject));
         ResetConnectors(connector1, connector2);
 
     }
@@ -149,6 +178,13 @@ public class ConnectionHandler : MonoBehaviour {
         {
             
         }
+    }
+
+    bool IsCorrectConnector(float xDiff, float yDiff)
+    {
+        if (Mathf.Abs(xDiff) > 0.1f && Mathf.Abs(yDiff) > 0.1f)
+            return false;
+        return true;
     }
 
     IEnumerator ShowFeedback(string feedback)

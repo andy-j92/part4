@@ -27,38 +27,54 @@ public class TemplateScript : MonoBehaviour {
         if(isHidden)
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            foreach (var spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+                spriteRenderer.enabled = true;
         }
         else
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            foreach (var spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+                spriteRenderer.enabled = false;
+        }
+
+        
+        if (Input.GetMouseButtonDown(1))
+        {
+            Destroy(gameObject);
+            ConnectionHandler.templateActive = false;
         }
 
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = new Vector3(Mathf.Round(mousePosition.x), Mathf.Round(mousePosition.y), 1.0f);
 
-        if(Input.GetMouseButtonDown(0))
+        Collider2D[] results = new Collider2D[5];
+        GetComponent<BoxCollider2D>().OverlapCollider(new ContactFilter2D(), results);
+        if (results[0] != null)
         {
-            Vector2 mouseRay = Camera.main.ScreenToWorldPoint(transform.position);
-            RaycastHit2D rayHit = Physics2D.Raycast(mouseRay, Vector2.zero, Mathf.Infinity);
-
-            if (!isHidden) { }
-            else if (rayHit.collider == null && isRotated)
-            {
-                Destroy(gameObject);
-                ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.Euler(0,0,90f)));
-                ConnectionHandler.templateActive = false;
-            }
-            else if (rayHit.collider == null && !isRotated)
-            {
-                Destroy(gameObject);
-                ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.identity));
-                ConnectionHandler.templateActive = false;
-            }
+            GetComponent<SpriteRenderer>().color = new Color(255, 0, 0, 0.4f);
         }
-        else if(Input.GetMouseButtonDown(1))
+        else
         {
-            Destroy(gameObject);
-            ConnectionHandler.templateActive = false;
+            GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 0.4f);
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector2 mouseRay = Camera.main.ScreenToWorldPoint(transform.position);
+                RaycastHit2D rayHit = Physics2D.Raycast(mouseRay, Vector2.zero, Mathf.Infinity);
+
+                if (!isHidden) { }
+                else if (rayHit.collider == null && isRotated)
+                {
+                    Destroy(gameObject);
+                    ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.Euler(0, 0, 90f)));
+                    ConnectionHandler.templateActive = false;
+                }
+                else if (rayHit.collider == null && !isRotated)
+                {
+                    Destroy(gameObject);
+                    ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.identity));
+                    ConnectionHandler.templateActive = false;
+                }
+            }
         }
 
         if(Input.GetKeyDown(KeyCode.R))

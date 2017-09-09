@@ -24,6 +24,31 @@ TagManager:
   - circuit_panel
   - components_panel
   - ConnectionFeedback
+  - FailedSaveFeedback
+  - Connector1
+  - Connector2
+  - Connector3
+  - Connector4
+  - Resistor1
+  - Resistor2
+  - Resistor3
+  - Resistor4
+  - Resistor5
+  - Resistor6
+  - Resistor7
+  - Resistor8
+  - Resistor9
+  - Resistor10
+  - Resistor11
+  - Resistor12
+  - Resistor13
+  - Resistor14
+  - Resistor15
+  - Resistor16
+  - Resistor17
+  - Resistor18
+  - Resistor19
+  - Resistor20
   layers:
   - Default
   - TransparentFX
@@ -36,6 +61,10 @@ TagManager:
   - GameBoard
   - Circuit
   - Help
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
