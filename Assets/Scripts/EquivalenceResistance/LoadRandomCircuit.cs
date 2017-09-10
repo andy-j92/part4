@@ -15,6 +15,7 @@ public class LoadRandomCircuit : MonoBehaviour {
     private FileInfo[] circuits;
     private List<GameObject> resistors;
     public static string filename;
+    public static double answer;
 
     void Start()
     {
@@ -81,7 +82,7 @@ public class LoadRandomCircuit : MonoBehaviour {
 
         var equationFile = new DirectoryInfo("Equations").GetFiles(filename + ".txt");
         if (equationFile.Length != 0)
-            Debug.Log(new Equation(resistorCount).Calculate(new DirectoryInfo("Equations").GetFiles(filename + ".txt")[0]));
+            answer = (new Equation(resistorCount).Calculate(new DirectoryInfo("Equations").GetFiles(filename + ".txt")[0]));
     }
 
     Vector3 GetPosition(string[] info)
@@ -180,6 +181,12 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
         CircuitHandler.wires = new List<Wire>();
+    }
+
+    public static double ANS
+    {
+        get { return answer; }
+        set { answer = value; }
     }
 
 
