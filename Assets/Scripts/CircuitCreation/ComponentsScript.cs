@@ -7,14 +7,11 @@ using UnityEngine.UI;
 public class ComponentsScript : MonoBehaviour {
 
     private bool isSelected;
-    private bool isTriggered;
-    private List<GameObject> nextComponents = new List<GameObject>();
     private List<GameObject> components = new List<GameObject>();
 
     void Start()
     {
         isSelected = false;
-        isTriggered = false;
     }
 
     void Update()
@@ -37,38 +34,10 @@ public class ComponentsScript : MonoBehaviour {
     void OnMouseOver()
     {
         
-        if (Input.GetMouseButtonDown(0) && gameObject.tag == "Wire")
-        {
-			Debug.Log(gameObject.GetInstanceID());
-		    Debug.Log("\n");
-		
-            foreach (var item in CircuitHandler.wires)
-            {
-                if(item.GetWireObject() == gameObject) {
-                    Debug.Log(item.GetWireObject().GetInstanceID());
-                    Debug.Log(item.GetComponent1().GetInstanceID());
-                    Debug.Log(item.GetComponent2().GetInstanceID());
-                }
-            }
-        }
-
         if (Input.GetMouseButtonDown(0) && !isSelected)
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))
             {
-                List<GameObject> va = CircuitHandler.GetDoubledEndedObject(gameObject).GetNextComponent();
-                List<GameObject> ca = CircuitHandler.GetDoubledEndedObject(gameObject).GetPreviousComponent();
-
-                Debug.Log("Current: " + CircuitHandler.GetDoubledEndedObject(gameObject).GetCurrentComponent().GetInstanceID());
-                foreach (var item in ca)
-                {
-                    Debug.Log("Prev: " + item.GetInstanceID());
-                }
-                foreach (var item in va)
-                {
-                    Debug.Log("Next: " + item.GetInstanceID());
-                }
-
                 if (CircuitHandler.selected1 == null)
                 {
                     CircuitHandler.selected1 = CircuitHandler.GetDoubledEndedObject(gameObject);
@@ -107,10 +76,9 @@ public class ComponentsScript : MonoBehaviour {
  
             if (CircuitHandler.selected1 != null && CircuitHandler.selected1.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected1 = null;
-            else if (CircuitHandler.selected1 != null && CircuitHandler.selected2.GetCurrentComponent() == gameObject)
+            else if (CircuitHandler.selected2 != null && CircuitHandler.selected2.GetCurrentComponent() == gameObject)
                 CircuitHandler.selected2 = null;
         }
-        
     }
 
     void OnTriggerEnter2D(Collider2D collider)

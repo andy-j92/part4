@@ -38,9 +38,9 @@ public class SaveButtonHandler : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) && saveModal.active == true)
+        if (Input.GetKeyDown(KeyCode.Return) && saveModal.activeSelf)
             SaveCircuit();
-        else if (Input.GetKeyDown(KeyCode.Escape) && saveModal.active == true)
+        else if (Input.GetKeyDown(KeyCode.Escape) && saveModal.activeSelf)
             CloseModal();
     }
 

@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour {
 
-    public Button yes, no;
-
     public void buttonYes()
     {
         SceneManager.LoadScene("PlayScreen");

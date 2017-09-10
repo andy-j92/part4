@@ -37,12 +37,19 @@ public class TemplateScript : MonoBehaviour {
                 spriteRenderer.enabled = false;
         }
 
+        
+        if (Input.GetMouseButtonDown(1))
+        {
+            Destroy(gameObject);
+            ConnectionHandler.templateActive = false;
+        }
+
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = new Vector3(Mathf.Round(mousePosition.x), Mathf.Round(mousePosition.y), 1.0f);
 
         Collider2D[] results = new Collider2D[5];
         GetComponent<BoxCollider2D>().OverlapCollider(new ContactFilter2D(), results);
-        if(results[0] != null)
+        if (results[0] != null)
         {
             GetComponent<SpriteRenderer>().color = new Color(255, 0, 0, 0.4f);
         }
@@ -67,11 +74,6 @@ public class TemplateScript : MonoBehaviour {
                     ConnectionHandler.circuitComponents.Add(Instantiate(finalObject, transform.position, Quaternion.identity));
                     ConnectionHandler.templateActive = false;
                 }
-            }
-            else if (Input.GetMouseButtonDown(1))
-            {
-                Destroy(gameObject);
-                ConnectionHandler.templateActive = false;
             }
         }
 
