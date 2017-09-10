@@ -13,17 +13,21 @@ public class GamePlay : MonoBehaviour
     public Image pOne, pTwo;
     public Animator aOne, aTwo;
     public float timer = 20f;
-    public Text time, final;
+    public Text time, p1score, p2score, final, wrong1, wrong2;
     public int numQ = 0;
     public Image circuit;
     public Transform gameOver, goBack;
     public Boolean pause;
     public InputField p1ans, p2ans;
+    public double answer;
     public LoadRandomCircuit load = new LoadRandomCircuit();
+
+    public double p1answer, p2answer;
+    public double p1s = 0.0, p2s = 0.0;
+    public Boolean correct1 = false, correct2 = false;
 
     void Awake()
     {
-
         one = SelectPlayer.ONE;
         two = SelectPlayer.TWO;
         numplayer = SelectPlayer.PNUM;
@@ -99,7 +103,10 @@ public class GamePlay : MonoBehaviour
 
     private void Update()
     {
+        answer = LoadRandomCircuit.ANS;
         helpScreen.gameObject.SetActive(state);
+        check1answer();
+        check2answer();
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -111,7 +118,7 @@ public class GamePlay : MonoBehaviour
         {
             numQ++;
 
-            if (numQ == 2)
+            if (numQ == 10)
             {
                 timer = 0;
                 gameOver.gameObject.SetActive(true);
@@ -119,12 +126,23 @@ public class GamePlay : MonoBehaviour
 
                 if (numplayer == 1)
                 {
-                    final.text = "HIGHSCORE:";
+                    final.text = "SCORE: " + p1s + "" ;
                 }
 
                 else
                 {
-                    final.text = "PLAYER WINS";
+                    if (p1s > p2s)
+                    {
+                        final.text = "PLAYER 1 WINS";
+                    }
+                    else if (p2s > p1s)
+                    {
+                        final.text = "PLAYER 2 WINS";
+                    }
+                    else
+                    {
+                        final.text = "DRAW";
+                    }
                 }
             }
 
@@ -134,8 +152,36 @@ public class GamePlay : MonoBehaviour
                 timer = 20;
             }
         }
-       
-           time.text = timer + "";
+
+        if (numQ == 10)
+        {
+            timer = 0;
+            gameOver.gameObject.SetActive(true);
+            CancelInvoke();
+
+            if (numplayer == 1)
+            {
+                final.text = "SCORE: " + p1s;
+            }
+
+            else
+            {
+                if (p1s > p2s)
+                {
+                    final.text = "PLAYER 1 WINS";
+                }
+                else if (p2s > p1s)
+                {
+                    final.text = "PLAYER 2 WINS";
+                }
+                else
+                {
+                    final.text = "DRAW";
+                }
+            }
+        }
+
+        time.text = timer + "";
         
     }
 
@@ -158,5 +204,90 @@ public class GamePlay : MonoBehaviour
     {
         goBack.gameObject.SetActive(false);
         InvokeRepeating("decreaseTimeRemaining", 1, 1);
+    }
+
+    void check1answer()
+    {
+        if (p1ans.isFocused && p1ans.text != "" && Input.GetKey(KeyCode.Return))
+        {
+            wrong1.gameObject.SetActive(false);
+            double.TryParse(p1ans.text, out p1answer);
+            if (p1answer == answer)
+            {
+                correct1 = true;
+                p1s = p1s + timer;
+                p1score.text = p1s + "";
+
+
+                if (numplayer == 1)
+                {
+                    numQ++;
+                    load.NextCircuit();
+                    timer = 120;
+                }
+
+                else
+                {
+                    if (correct2 == true)
+                    {
+                        numQ++;
+                        p2ans.text = "";
+                        p2ans.interactable = true;
+                        correct1 = false;
+                        correct2 = false;
+                        load.NextCircuit();
+                        timer = 120;
+                    }
+                    else
+                    {
+                        p1ans.interactable = false;
+                    }
+                }
+            }
+            else
+            {
+                wrong1.gameObject.SetActive(true);
+            }
+
+            p1ans.text = "";
+        }
+    }
+
+    void check2answer ()
+    { 
+        if (p2ans.isFocused && p2ans.text != "" && Input.GetKey(KeyCode.Return))
+        {
+            wrong2.gameObject.SetActive(false);
+            double.TryParse(p2ans.text, out p2answer);
+            if (p2answer == answer)
+            {
+                correct2 = true;
+                p2s = p2s + timer;
+                p2score.text = p2s + "";
+
+                if (correct1 == true)
+                {
+                    numQ++;
+                    p1ans.text = "";
+                    p1ans.interactable = true;
+                    correct1 = false;
+                    correct2 = false;
+                    load.NextCircuit();
+                    timer = 120;
+                }
+
+                else
+                {
+                    p2ans.interactable = false;
+                }
+            }
+            else
+            {
+                wrong2.gameObject.SetActive(true);
+            }
+
+            p2ans.text = "";
+        }
+
     }
 }
