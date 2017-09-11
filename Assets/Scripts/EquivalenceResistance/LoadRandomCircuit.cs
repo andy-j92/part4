@@ -24,7 +24,8 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.components = new List<GameObject>();
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);
-        StartCoroutine(DrawCircuit(circuits[Random.Range(0, circuits.Length)]));
+        currentCircuitIndex = Random.Range(0, circuits.Length);
+        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
     }
 
     IEnumerator DrawCircuit(FileInfo file)
