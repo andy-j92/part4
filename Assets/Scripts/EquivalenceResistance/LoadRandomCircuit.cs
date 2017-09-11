@@ -77,8 +77,15 @@ public class LoadRandomCircuit : MonoBehaviour {
         reader.Close();
         
         yield return new WaitForSeconds(0.1f);
-        new CircuitHandler().StartSetUp();
-        DisableScripts();
+        if (SceneManager.GetActiveScene().name.Equals("PlayScreen"))
+        {
+            DisableAll();
+        }
+        else
+        {
+            new CircuitHandler().StartSetUp();
+            DisableScripts();
+        }
 
         var equationFile = new DirectoryInfo("Equations").GetFiles(filename + ".txt");
         if (equationFile.Length != 0)
@@ -181,6 +188,25 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
         CircuitHandler.wires = new List<Wire>();
+    }
+
+    public void DisableAll()
+    {
+        foreach (var item in CircuitHandler.components)
+        {
+            item.GetComponent<BoxCollider2D>().enabled = false;
+            if(item.GetComponentsInChildren<BoxCollider2D>().Length != 0)
+            {
+                foreach (var comp in item.GetComponentsInChildren<BoxCollider2D>())
+                {
+                    comp.enabled = false;
+                }
+            }
+            
+            item.GetComponent<ComponentsScript>().enabled = false;
+            if (item.GetComponent<Rigidbody2D>() != null)
+                item.GetComponent<Rigidbody2D>().Sleep();
+        }
     }
 
     public static double ANS
