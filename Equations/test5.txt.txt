@@ -1,3 +1,2 @@
-Resistor1,Resistor2,parallel
 Resistor2,Resistor1,parallel
 

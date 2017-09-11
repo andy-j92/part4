@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,7 +46,7 @@ public class Equation {
 
     private double ParallelCalc(double resistance1, double resistance2)
     {
-        return (resistance1 + resistance2) / 2;
+        return (resistance1 * resistance2) / (resistance1 + resistance2);
     }
 
     private int GetResistorNumber(GameObject resistor)
@@ -107,6 +108,6 @@ public class Equation {
                 resistances[num2] = result;
             }
         }
-        return result;
+        return Math.Round(result,2);
     }
 }
