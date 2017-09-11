@@ -21,6 +21,7 @@ public class LoadRandomCircuit : MonoBehaviour {
     {
         wire.GetComponent<BoxCollider2D>().isTrigger = true;
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
+        CircuitHandler.components = new List<GameObject>();
         TransformHandler.SetWireObject(wire);
         TransformHandler.SetActionObject(action);
         StartCoroutine(DrawCircuit(circuits[Random.Range(0, circuits.Length)]));
