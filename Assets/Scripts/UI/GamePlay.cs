@@ -150,7 +150,7 @@ public class GamePlay : MonoBehaviour
             else
             {
                 load.NextCircuit();
-                timer = 20;
+                timer = 120;
             }
         }
 
