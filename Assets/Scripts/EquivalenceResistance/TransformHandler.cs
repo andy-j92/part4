@@ -139,8 +139,7 @@ public class TransformHandler : MonoBehaviour
 
             if (comp1 == resistor1 || comp2 == resistor1)
             {
-                //item.GetWireObject().SetActive(false);
-                Destroy(item.GetWireObject());
+                item.GetWireObject().SetActive(false);
                 wire.Add(item);
             }
         }
@@ -160,6 +159,7 @@ public class TransformHandler : MonoBehaviour
         actions.Add(newAction);
 
         CircuitHandler.equation.Parallel(resistor1, resistor2);
+        RemoveHangingComponents();
         TransformComplete(resistor1, resistor2);
     }
 
@@ -171,6 +171,42 @@ public class TransformHandler : MonoBehaviour
         CircuitHandler.selected2.GetCurrentComponent().GetComponentInChildren<SpriteRenderer>().color = Color.white;
         CircuitHandler.selected1 = null;
         CircuitHandler.selected2 = null;
+    }
+
+    static void RemoveHangingComponents()
+    {
+        foreach (var item in CircuitHandler.connectedComponents.Keys)
+        {
+            if(item.activeSelf && item.tag == "Node")
+            {
+                var component = CircuitHandler.GetDoubledEndedObject(item);
+                Debug.Log("here1");
+                if(component.GetPreviousComponent().Count == 0 && component.GetNextComponent().Count == 1)
+                {
+                    Debug.Log("here2");
+                    foreach (var wire in CircuitHandler.wires)
+                    {
+                        if (wire.GetComponent1() == item || wire.GetComponent2() == item)
+                        {
+                            wire.GetWireObject().SetActive(false);
+                            item.SetActive(false);
+                        }
+                    }
+                }
+                else if(component.GetPreviousComponent().Count == 1 && component.GetNextComponent().Count == 0)
+                {
+                    Debug.Log("here3");
+                    foreach (var wire in CircuitHandler.wires)
+                    {
+                        if (wire.GetComponent1() == item || wire.GetComponent2() == item)
+                        {
+                            wire.GetWireObject().SetActive(false);
+                            item.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void SetWireObject(GameObject wire)
