@@ -197,10 +197,10 @@ public class CircuitHandler : MonoBehaviour {
                     connectedComponents.Add(item);
             }
            
-            if (connectedComponents.Count > 2)
-                return null;
-            else
-            {
+            //if (connectedComponents.Count > 2)
+            //    return null;
+            //else
+            //{
                 connectedComponents.Remove(previousComponent);
                 if (connectedComponents[0] == component2.GetCurrentComponent())
                     return component1.GetCurrentComponent();
@@ -209,7 +209,7 @@ public class CircuitHandler : MonoBehaviour {
                     previousComponent = currentComponent;
                     currentComponent = connectedComponents[0];
                 }
-            }
+            //}
 
         }
         previousComponent = component1.GetNextComponent()[0];
@@ -363,6 +363,8 @@ public class CircuitHandler : MonoBehaviour {
             {
                 GameObject nextNode = nextNodes.Dequeue();
                 DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
+                Debug.Log(nextNode.GetInstanceID());
+
                 if (currentNode.GetNextComponent().Count == 0)
                 {
                     backwards = true;
@@ -377,6 +379,8 @@ public class CircuitHandler : MonoBehaviour {
                 }
                 else
                 {
+                    if (currentNode.GetPreviousComponent().Contains(nextNode1))
+                        return true;
                     foreach (var item in currentNode.GetNextComponent())
                     {
                         if (item.tag == "Node")

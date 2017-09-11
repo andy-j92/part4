@@ -105,7 +105,7 @@ public class SaveButtonHandler : MonoBehaviour {
     {
         var filePath = "Circuits/";
 
-        if (File.Exists(filePath + filename + ".txt"))
+        if (File.Exists(filePath + filename))
         {
             warning.SetActive(true);
             return;
@@ -116,7 +116,7 @@ public class SaveButtonHandler : MonoBehaviour {
             return;
         }
 
-        var file = File.CreateText(filePath + filename + ".txt");
+        var file = File.CreateText(filePath + filename);
         file.WriteLine(sb.ToString());
         file.Close();
 
