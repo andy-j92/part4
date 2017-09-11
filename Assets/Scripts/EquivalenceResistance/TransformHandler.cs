@@ -16,9 +16,20 @@ public class TransformHandler : MonoBehaviour
     public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
         var deResistor2 = CircuitHandler.GetDoubledEndedObject(resistor2);
-        //Components in series can only have a single previous component
-        var nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
-        var prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+        DoubleEnded nextComp2 = null;
+        DoubleEnded prevComp2 = null;
+
+        if (deResistor2.GetNextComponent().Count != 0)
+        {
+            nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
+            prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+        }
+        else
+        {
+            nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+            prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[1]);
+        }
+
 
         //components in series must have a single prev and next or 2 prevs or 2 nexts 
         if (prevComp2.GetNextComponent().Contains(resistor2))
