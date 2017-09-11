@@ -1,2 +1,2 @@
-Resistor2,Resistor1,series
+Resistor1,Resistor2,series
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -70,7 +71,8 @@ public class TransformHandler : MonoBehaviour
         double resistance2 = 0.0;
         double.TryParse(comp1.GetComponentInChildren<TextMesh>().text, out resistance1);
         double.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
-        return ((resistance1 + resistance2) / 2).ToString();
+        var result = Math.Round(((resistance1 * resistance2) / (resistance1 + resistance2)), 2);
+        return result.ToString();
     }
 
     public static void TransformParallel(GameObject resistor1, GameObject resistor2)
