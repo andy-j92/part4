@@ -33,7 +33,6 @@ public class ComponentsScript : MonoBehaviour {
 
     void OnMouseOver()
     {
-        
         if (Input.GetMouseButtonDown(0) && !isSelected)
         {
             if (SceneManager.GetActiveScene().name.Equals("EquivalentResistance"))

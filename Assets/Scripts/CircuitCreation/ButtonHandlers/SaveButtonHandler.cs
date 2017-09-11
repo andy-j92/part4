@@ -116,7 +116,7 @@ public class SaveButtonHandler : MonoBehaviour {
             return;
         }
 
-        var file = File.CreateText(filePath + filename);
+        var file = File.CreateText(filePath + filename + ".txt");
         file.WriteLine(sb.ToString());
         file.Close();
 
@@ -128,27 +128,67 @@ public class SaveButtonHandler : MonoBehaviour {
     {
         var components = ConnectionHandler.circuitComponents;
         var wires = ConnectionHandler.wires;
+        Dictionary<int, int> connectionCount = new Dictionary<int, int>();
 
-        Debug.Log(components.Count);
-        Debug.Log(wires.Count);
+        if (components.Count == 2 || wires.Count == 0)
+            return false;
 
-        List<bool> result = new List<bool>();
         foreach (var component in components)
         {
             if (component.tag != "Wire")
             {
-                foreach (var wire in wires)
+                if (component.tag == "StartingNode" || component.tag == "EndingNode")
                 {
-                    if (wire.GetComponent1() == component || wire.GetComponent2() == component)
+                    connectionCount.Add(component.GetInstanceID(), 2);
+                }
+                else
+                {
+                    foreach (var wire in wires)
                     {
-                        result.Add(true);
-                        break;
+                        if (wire.GetComponent1() == null || wire.GetComponent2() == null)
+                            return false;
+                        else if (wire.GetComponent1() == component)
+                        {
+                            if (!connectionCount.ContainsKey(wire.GetComponent1().GetInstanceID()))
+                                connectionCount.Add(wire.GetComponent1().GetInstanceID(), 1);
+                            else
+                            {
+                                int count = 0;
+                                connectionCount.TryGetValue(wire.GetComponent1().GetInstanceID(), out count);
+                                connectionCount.Remove(wire.GetComponent1().GetInstanceID());
+                                connectionCount.Add(wire.GetComponent1().GetInstanceID(), count++);
+                            }
+                            break;
+                        }
+                        else if (wire.GetComponent2() == component)
+                        {
+                            if (!connectionCount.ContainsKey(wire.GetComponent2().GetInstanceID()))
+                                connectionCount.Add(wire.GetComponent2().GetInstanceID(), 1);
+                            else
+                            {
+                                int count = 0;
+                                connectionCount.TryGetValue(wire.GetComponent2().GetInstanceID(), out count);
+                                connectionCount.Remove(wire.GetComponent2().GetInstanceID());
+                                connectionCount.Add(wire.GetComponent2().GetInstanceID(), count++);
+                            }
+                            break;
+                        }
                     }
                 }
+                
             }
         }
-        return result.Count == components.Count - wires.Count ? true:false;
+        foreach (var item in connectionCount.Keys)
+        {
+            int count = 0;
+            connectionCount.TryGetValue(item, out count);
+            Debug.Log(item);
+            Debug.Log(count);
+            if (count < 2)
+                return false;
+        }
 
+        return true;
     }
 
     IEnumerator ShowFeedback()
