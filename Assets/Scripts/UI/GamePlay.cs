@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -246,7 +247,7 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
-                wrong1.gameObject.SetActive(true);
+                StartCoroutine(ShowFeedback(wrong1.gameObject));
             }
 
             p1ans.text = "";
@@ -283,11 +284,18 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
-                wrong2.gameObject.SetActive(true);
+                StartCoroutine(ShowFeedback(wrong2.gameObject));
             }
 
             p2ans.text = "";
         }
 
     }
+
+    IEnumerator ShowFeedback(GameObject feedback)
+    {
+        feedback.SetActive(true);
+        yield return new WaitForSeconds(2.0f);
+        feedback.SetActive(false);
+    } 
 }
