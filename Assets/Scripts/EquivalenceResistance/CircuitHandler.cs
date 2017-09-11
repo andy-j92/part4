@@ -182,7 +182,6 @@ public class CircuitHandler : MonoBehaviour {
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
     {
         GameObject currentComponent = component1.GetCurrentComponent();
-        //previous component of a resistor is always 1
         GameObject previousComponent = component1.GetPreviousComponent()[0];
         while (currentComponent.tag != "EndingNode")
         {
