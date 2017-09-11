@@ -23,11 +23,33 @@ public class TransformHandler : MonoBehaviour
         {
             nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
             prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+
+            if (prevComp2.GetNextComponent().Contains(resistor2))
+            {
+                prevComp2.GetNextComponent().Remove(resistor2);
+                prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
+            }
+            if (nextComp2.GetPreviousComponent().Contains(resistor2))
+            {
+                nextComp2.GetPreviousComponent().Remove(resistor2);
+                nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
+            }
         }
         else
         {
             nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
             prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[1]);
+
+            if (prevComp2.GetNextComponent().Contains(resistor2))
+            {
+                prevComp2.GetNextComponent().Remove(resistor2);
+                prevComp2.GetNextComponent().AddRange(deResistor2.GetPreviousComponent());
+            }
+            if (nextComp2.GetPreviousComponent().Contains(resistor2))
+            {
+                nextComp2.GetPreviousComponent().Remove(resistor2);
+                nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
+            }
         }
 
 
@@ -117,7 +139,8 @@ public class TransformHandler : MonoBehaviour
 
             if (comp1 == resistor1 || comp2 == resistor1)
             {
-                item.GetWireObject().SetActive(false);
+                //item.GetWireObject().SetActive(false);
+                Destroy(item.GetWireObject());
                 wire.Add(item);
             }
         }

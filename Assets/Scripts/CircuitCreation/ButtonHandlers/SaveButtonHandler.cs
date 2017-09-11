@@ -129,21 +129,29 @@ public class SaveButtonHandler : MonoBehaviour {
         var components = ConnectionHandler.circuitComponents;
         var wires = ConnectionHandler.wires;
 
-        if (wires.Count == 0 || wires.Count != components.Count - wires.Count - 1)
-            return false;
+        Debug.Log(components.Count);
+        Debug.Log(wires.Count);
+
+        //if (wires.Count == 0 || wires.Count != components.Count - wires.Count - 1)
+        //    return false;
 
         List<bool> result = new List<bool>();
         foreach (var component in components)
         {
+            Debug.Log(component.GetInstanceID());
             if (component.tag != "Wire")
             {
                 foreach (var wire in wires)
                 {
+                    Debug.Log(wire.GetComponent1().GetInstanceID());
+                    Debug.Log(wire.GetComponent2().GetInstanceID());
                     if (wire.GetComponent1() == component || wire.GetComponent2() == component)
                     {
                         result.Add(true);
                         break;
                     }
+                    Debug.Log("\n");
+
                 }
             }
         }

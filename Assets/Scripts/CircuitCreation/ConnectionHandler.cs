@@ -34,7 +34,7 @@ public class ConnectionHandler : MonoBehaviour {
         Vector3 startNodePos = new Vector3(-7, 3, 0);
         Vector3 endNodePos = new Vector3(-7, -2, 0);
 
-    var startNode = Instantiate(node, startNodePos, Quaternion.identity);
+        var startNode = Instantiate(node, startNodePos, Quaternion.identity);
         startNode.tag = "StartingNode";
         startNode.GetComponent<BoxCollider2D>().enabled = false;
         circuitComponents.Add(startNode);
@@ -117,6 +117,10 @@ public class ConnectionHandler : MonoBehaviour {
                 return;
             }
         }
+
+        xDiff = Mathf.Round(xDiff);
+        yDiff = Mathf.Round(yDiff);
+
         if (xDiff < 0)
         {
             newWire = Instantiate(wire, wirePos, Quaternion.identity);

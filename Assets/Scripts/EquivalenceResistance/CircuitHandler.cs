@@ -29,9 +29,9 @@ public class CircuitHandler : MonoBehaviour {
     void Update()
     {
         int count = 0;
-        foreach (var item in connectedComponents.Keys)
+        foreach (var item in LoadRandomCircuit.resistors)
         {
-            if (item.tag.Contains("Resistor") && item.activeSelf)
+            if (item.activeSelf)
                 count++;
         }
 

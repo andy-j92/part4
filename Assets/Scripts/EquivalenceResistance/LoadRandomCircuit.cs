@@ -13,7 +13,7 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     private int currentCircuitIndex = 0;
     private FileInfo[] circuits;
-    private List<GameObject> resistors;
+    public static List<GameObject> resistors;
     public static string filename;
     public static double answer;
 
@@ -21,8 +21,13 @@ public class LoadRandomCircuit : MonoBehaviour {
     {
         wire.GetComponent<BoxCollider2D>().isTrigger = true;
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
+
+        CircuitHandler.selected1 = null;
+        CircuitHandler.selected2 = null;
+        CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
-        TransformHandler.SetWireObject(wire);
+        CircuitHandler.wires = new List<Wire>(); TransformHandler.SetWireObject(wire);
+
         TransformHandler.SetActionObject(action);
         currentCircuitIndex = Random.Range(0, circuits.Length);
         StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
