@@ -128,7 +128,7 @@ public class SaveButtonHandler : MonoBehaviour {
     {
         var components = ConnectionHandler.circuitComponents;
         var wires = ConnectionHandler.wires;
-        Dictionary<int, int> connectionCount = new Dictionary<int, int>();
+        Dictionary<GameObject, int> connectionCount = new Dictionary<GameObject, int>();
 
         if (components.Count == 2 || wires.Count == 0)
             return false;
@@ -137,55 +137,39 @@ public class SaveButtonHandler : MonoBehaviour {
         {
             if (component.tag != "Wire")
             {
-                if (component.tag == "StartingNode" || component.tag == "EndingNode")
+                foreach (var wire in wires)
                 {
-                    connectionCount.Add(component.GetInstanceID(), 2);
-                }
-                else
-                {
-                    foreach (var wire in wires)
+                    if (wire.GetComponent1() == null || wire.GetComponent2() == null)
+                        return false;
+                    else if (wire.GetComponent1() == component || wire.GetComponent2() == component)
                     {
-                        if (wire.GetComponent1() == null || wire.GetComponent2() == null)
-                            return false;
-                        else if (wire.GetComponent1() == component)
+                        if (!connectionCount.ContainsKey(component))
+                            connectionCount.Add(component, 1);
+                        else
                         {
-                            if (!connectionCount.ContainsKey(wire.GetComponent1().GetInstanceID()))
-                                connectionCount.Add(wire.GetComponent1().GetInstanceID(), 1);
-                            else
-                            {
-                                int count = 0;
-                                connectionCount.TryGetValue(wire.GetComponent1().GetInstanceID(), out count);
-                                connectionCount.Remove(wire.GetComponent1().GetInstanceID());
-                                connectionCount.Add(wire.GetComponent1().GetInstanceID(), count++);
-                            }
-                            break;
-                        }
-                        else if (wire.GetComponent2() == component)
-                        {
-                            if (!connectionCount.ContainsKey(wire.GetComponent2().GetInstanceID()))
-                                connectionCount.Add(wire.GetComponent2().GetInstanceID(), 1);
-                            else
-                            {
-                                int count = 0;
-                                connectionCount.TryGetValue(wire.GetComponent2().GetInstanceID(), out count);
-                                connectionCount.Remove(wire.GetComponent2().GetInstanceID());
-                                connectionCount.Add(wire.GetComponent2().GetInstanceID(), count++);
-                            }
-                            break;
+                            int count = 0;
+                            connectionCount.TryGetValue(component, out count);
+                            connectionCount.Remove(component);
+                            connectionCount.Add(component, count + 1);
                         }
                     }
                 }
-                
             }
         }
+
         foreach (var item in connectionCount.Keys)
         {
-            int count = 0;
-            connectionCount.TryGetValue(item, out count);
-            Debug.Log(item);
-            Debug.Log(count);
-            if (count < 2)
-                return false;
+            if(item.tag == "StartingNode" || item.tag == "EndingNode") { }
+            else
+            {
+                int count = 0;
+                connectionCount.TryGetValue(item, out count);
+
+                if (count == 1)
+                    item.GetComponent<SpriteRenderer>().color = Color.red;
+                if (count < 2)
+                    return false;
+            }
         }
 
         return true;
