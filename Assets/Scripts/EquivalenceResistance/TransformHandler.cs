@@ -83,6 +83,7 @@ public class TransformHandler : MonoBehaviour
         newWire.transform.position = position;
         newWire.transform.localScale = new Vector3(3, 1, 1);
         newWire.transform.rotation = rotation;
+        CircuitHandler.wires.Add(new Wire(newWire, null, null));
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
         resistor2.SetActive(false);
         CircuitHandler.equation.Series(resistor1, resistor2);
@@ -139,7 +140,9 @@ public class TransformHandler : MonoBehaviour
 
             if (comp1 == resistor1 || comp2 == resistor1)
             {
-                item.GetWireObject().SetActive(false);
+                //item.GetWireObject().SetActive(false);
+                Destroy(item.GetWireObject());
+                CircuitHandler.connectedComponents.Remove(item.GetWireObject());
                 wire.Add(item);
             }
         }
@@ -180,10 +183,14 @@ public class TransformHandler : MonoBehaviour
             if(item.activeSelf && item.tag == "Node")
             {
                 var component = CircuitHandler.GetDoubledEndedObject(item);
-                Debug.Log("here1");
                 if(component.GetPreviousComponent().Count == 0 && component.GetNextComponent().Count == 1)
                 {
-                    Debug.Log("here2");
+                    var nextComp = CircuitHandler.GetDoubledEndedObject(component.GetNextComponent()[0]);
+                    if (nextComp.GetPreviousComponent().Contains(item))
+                        nextComp.GetPreviousComponent().Remove(item);
+                    else if (nextComp.GetNextComponent().Contains(item))
+                        nextComp.GetNextComponent().Remove(item);
+
                     foreach (var wire in CircuitHandler.wires)
                     {
                         if (wire.GetComponent1() == item || wire.GetComponent2() == item)
@@ -195,7 +202,12 @@ public class TransformHandler : MonoBehaviour
                 }
                 else if(component.GetPreviousComponent().Count == 1 && component.GetNextComponent().Count == 0)
                 {
-                    Debug.Log("here3");
+                    var prevComp = CircuitHandler.GetDoubledEndedObject(component.GetPreviousComponent()[0]);
+                    if (prevComp.GetPreviousComponent().Contains(item))
+                        prevComp.GetPreviousComponent().Remove(item);
+                    else if (prevComp.GetNextComponent().Contains(item))
+                        prevComp.GetNextComponent().Remove(item);
+
                     foreach (var wire in CircuitHandler.wires)
                     {
                         if (wire.GetComponent1() == item || wire.GetComponent2() == item)

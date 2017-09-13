@@ -169,6 +169,9 @@ public class LoadRandomCircuit : MonoBehaviour {
         var nodes = GameObject.FindGameObjectsWithTag("Node");
         var wires = GameObject.FindGameObjectsWithTag("Wire");
 
+        Destroy(GameObject.FindGameObjectsWithTag("StartingNode")[0]);
+        Destroy(GameObject.FindGameObjectsWithTag("EndingNode")[0]);
+
         foreach (var resistor in resistors)
         {
             Destroy(resistor);
@@ -178,11 +181,10 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             Destroy(node);
         }
-        Destroy(GameObject.FindGameObjectsWithTag("StartingNode")[0]);
-        Destroy(GameObject.FindGameObjectsWithTag("EndingNode")[0]);
-        foreach (var wire in wires)
+
+        foreach (var wire in CircuitHandler.wires)
         {
-            Destroy(wire);
+            Destroy(wire.GetWireObject());
         }
 
         foreach (var action in TransformHandler.actions)
