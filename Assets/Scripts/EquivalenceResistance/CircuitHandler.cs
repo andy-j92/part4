@@ -21,6 +21,13 @@ public class CircuitHandler : MonoBehaviour {
 
     void Start()
     {
+        componentOrder = new List<DoubleEnded>();
+        components = new List<GameObject>();
+        connectedComponents = new Dictionary<GameObject, List<GameObject>>();
+        connectionQueue = new Queue<GameObject>();
+        processedComponents = new List<GameObject>();
+        equation = new Equation();
+        wires = new List<Wire>();
         selected1 = null;
         selected2 = null;
         isSaved = false;

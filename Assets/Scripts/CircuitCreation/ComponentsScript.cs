@@ -12,6 +12,7 @@ public class ComponentsScript : MonoBehaviour {
     void Start()
     {
         isSelected = false;
+        components = new List<GameObject>();
     }
 
     void Update()

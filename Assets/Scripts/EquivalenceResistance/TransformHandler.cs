@@ -6,12 +6,15 @@ using UnityEngine.UI;
 
 public class TransformHandler : MonoBehaviour
 {
-
-    // public GameObject action;
-
     private static GameObject _wire;
-    private static GameObject _action;
+    private static float historyBoxSize;
     public static List<GameObject> actions = new List<GameObject>();
+
+    void Start()
+    {
+        actions = new List<GameObject>();
+        historyBoxSize = 126;
+    }
 
     public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
@@ -99,13 +102,7 @@ public class TransformHandler : MonoBehaviour
         var actionText = "Series Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
             ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
-        var newAction = Instantiate(_action);
-        newAction.transform.SetParent(GameObject.FindGameObjectWithTag("History").transform);
-        newAction.GetComponent<Text>().text = actionText;
-        newAction.GetComponent<Text>().fontSize = 18;
-        newAction.transform.localScale = new Vector3(1, 1, 1);
-        newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
-        actions.Add(newAction);
+        AddAction(actionText);
 
         var newWire = Instantiate(_wire);
         newWire.transform.position = position;
@@ -181,12 +178,7 @@ public class TransformHandler : MonoBehaviour
             CircuitHandler.wires.Remove(item);
         }
 
-        var newAction = Instantiate(_action);
-        newAction.transform.SetParent(GameObject.FindGameObjectWithTag("History").transform);
-        newAction.GetComponent<Text>().text = actionText;
-        newAction.transform.localScale = new Vector3(1, 1, 1);
-        newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
-        actions.Add(newAction);
+        AddAction(actionText);
 
         CircuitHandler.equation.Parallel(resistor1, resistor2);
         RemoveHangingComponents();
@@ -201,6 +193,21 @@ public class TransformHandler : MonoBehaviour
         CircuitHandler.selected2.GetCurrentComponent().GetComponentInChildren<SpriteRenderer>().color = Color.white;
         CircuitHandler.selected1 = null;
         CircuitHandler.selected2 = null;
+    }
+
+    static void AddAction(string actionText)
+    {
+        Debug.Log(actions.Count);
+        var tag = actions.Count == 0 ? "Action" : "Action" + actions.Count;
+        var newAction = GameObject.FindGameObjectWithTag(tag);
+        if (actions.Count > 8)
+        {
+            var history = GameObject.FindGameObjectWithTag("History");
+            history.GetComponent<RectTransform>().offsetMax = new Vector2(history.GetComponent<RectTransform>().offsetMax.x + historyBoxSize, 0);
+        }
+        newAction.GetComponent<Text>().text = actionText;
+        actions.Add(newAction);
+
     }
 
     static void RemoveHangingComponents()
@@ -251,10 +258,5 @@ public class TransformHandler : MonoBehaviour
     public static void SetWireObject(GameObject wire)
     {
         _wire = wire;
-    }
-
-    public static void SetActionObject(GameObject action)
-    {
-        _action = action;
     }
 }

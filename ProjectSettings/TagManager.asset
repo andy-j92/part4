@@ -49,6 +49,25 @@ TagManager:
   - Resistor18
   - Resistor19
   - Resistor20
+  - Action1
+  - Action2
+  - Action3
+  - Action4
+  - Action5
+  - Action6
+  - Action7
+  - Action8
+  - Action9
+  - Action10
+  - Action11
+  - Action12
+  - Action13
+  - Action14
+  - Action15
+  - Action16
+  - Action17
+  - Action18
+  - Action19
   layers:
   - Default
   - TransparentFX
@@ -61,10 +80,6 @@ TagManager:
   - GameBoard
   - Circuit
   - Help
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 

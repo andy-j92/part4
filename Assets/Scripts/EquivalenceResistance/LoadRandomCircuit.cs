@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LoadRandomCircuit : MonoBehaviour {
 
@@ -28,7 +29,6 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.components = new List<GameObject>();
         CircuitHandler.wires = new List<Wire>(); TransformHandler.SetWireObject(wire);
 
-        TransformHandler.SetActionObject(action);
         currentCircuitIndex = Random.Range(0, circuits.Length);
         StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
     }
@@ -189,7 +189,7 @@ public class LoadRandomCircuit : MonoBehaviour {
 
         foreach (var action in TransformHandler.actions)
         {
-            Destroy(action);
+            action.GetComponent<Text>().text = "";
         }
 
         CircuitHandler.selected1 = null;
@@ -197,6 +197,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
         CircuitHandler.wires = new List<Wire>();
+        TransformHandler.actions = new List<GameObject>();
     }
 
     public void DisableAll()
