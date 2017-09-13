@@ -43,13 +43,41 @@ public class TransformHandler : MonoBehaviour
             if (prevComp2.GetNextComponent().Contains(resistor2))
             {
                 prevComp2.GetNextComponent().Remove(resistor2);
-                prevComp2.GetNextComponent().AddRange(deResistor2.GetPreviousComponent());
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != prevComp2.GetCurrentComponent())
+                        prevComp2.GetNextComponent().Add(item);
+                }
             }
+            else if(prevComp2.GetPreviousComponent().Contains(resistor2))
+            {
+                prevComp2.GetPreviousComponent().Remove(resistor2);
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != prevComp2.GetCurrentComponent())
+                        prevComp2.GetPreviousComponent().Add(item);
+                }
+            }
+
             if (nextComp2.GetPreviousComponent().Contains(resistor2))
             {
                 nextComp2.GetPreviousComponent().Remove(resistor2);
-                nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != nextComp2.GetCurrentComponent())
+                        nextComp2.GetPreviousComponent().Add(item);
+                }
             }
+            else if(nextComp2.GetNextComponent().Contains(resistor2))
+            {
+                nextComp2.GetNextComponent().Remove(resistor2);
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != nextComp2.GetCurrentComponent())
+                        nextComp2.GetNextComponent().Add(item);
+                }
+            }
+
         }
 
 
@@ -140,7 +168,6 @@ public class TransformHandler : MonoBehaviour
 
             if (comp1 == resistor1 || comp2 == resistor1)
             {
-                //item.GetWireObject().SetActive(false);
                 Destroy(item.GetWireObject());
                 CircuitHandler.connectedComponents.Remove(item.GetWireObject());
                 wire.Add(item);

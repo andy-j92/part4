@@ -320,8 +320,10 @@ public class CircuitHandler : MonoBehaviour {
         bool foundComp2 = false;
         
         Queue<GameObject> nextNodes = new Queue<GameObject>();
+        List<GameObject> processedComp = new List<GameObject>();
         bool backwards = false;
         nextNodes.Enqueue(prevNode1);
+        processedComp.Add(prevNode1);
         while (nextNodes.Count > 0)
         {
             GameObject nextNode = nextNodes.Dequeue();
@@ -334,7 +336,7 @@ public class CircuitHandler : MonoBehaviour {
             {
                 foreach (var item in currentNode.GetPreviousComponent())
                 {
-                    if (item.tag == "Node")
+                    if (item.tag == "Node" && !processedComp.Contains(item))
                         nextNodes.Enqueue(item);
                 }
             }
@@ -342,7 +344,7 @@ public class CircuitHandler : MonoBehaviour {
             {
                 foreach (var item in currentNode.GetNextComponent())
                 {
-                    if (item.tag == "Node")
+                    if (item.tag == "Node" && !processedComp.Contains(item))
                         nextNodes.Enqueue(item);
                 }
             }
@@ -379,7 +381,7 @@ public class CircuitHandler : MonoBehaviour {
                 {
                     foreach (var item in currentNode.GetPreviousComponent())
                     {
-                        if (item.tag == "Node")
+                        if (item.tag == "Node" && !processedComp.Contains(item))
                             nextNodes.Enqueue(item);
                     }
                 }
@@ -389,7 +391,7 @@ public class CircuitHandler : MonoBehaviour {
                         return true;
                     foreach (var item in currentNode.GetNextComponent())
                     {
-                        if (item.tag == "Node")
+                        if (item.tag == "Node" && !processedComp.Contains(item))
                             nextNodes.Enqueue(item);
                     }
                 }
