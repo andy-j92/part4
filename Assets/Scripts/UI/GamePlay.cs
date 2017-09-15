@@ -9,7 +9,7 @@ public class GamePlay : MonoBehaviour
     public Text help;
     public Transform helpScreen;
     public Boolean state = false;
-    public Button playerOne, playerTwo;
+    public Button playerOne, playerTwo, instruction;
     public int one, two, numplayer;
     public Image pOne, pTwo;
     public Animator aOne, aTwo;
@@ -100,6 +100,7 @@ public class GamePlay : MonoBehaviour
         gameOver.gameObject.SetActive(false);
         help.text = " < Objective >: Calculate and Enter the correct equvialent resistance of the circuit. \n < Score System >: Player to answer correct will < +score >. \n IF, both players answer correct within the give time, first person to answer will gain extra points. \n \n<EXIT> : | esc | ";
         InvokeRepeating("decreaseTimeRemaining", 1, 1);
+        StartCoroutine(ShowFeedback(instruction.gameObject));
     }
 
     private void Update()
@@ -295,7 +296,7 @@ public class GamePlay : MonoBehaviour
     IEnumerator ShowFeedback(GameObject feedback)
     {
         feedback.SetActive(true);
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(3.0f);
         feedback.SetActive(false);
     } 
 }

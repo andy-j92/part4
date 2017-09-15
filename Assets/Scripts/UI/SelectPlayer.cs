@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ public class SelectPlayer : MonoBehaviour
     public Transform player2, t_cap, t_led, t_res, t_trans;
     public Button one_cap, one_led, one_res, one_trans, two_cap, two_led, two_res, two_trans, playbutton;
     public Button player1chosen, player2chosen;
-    public Button turnoff1, turnoff2;
+    public Button turnoff1, turnoff2, selectPlayer;
 
     public static int one=0, two=0;
 
@@ -18,7 +19,8 @@ public class SelectPlayer : MonoBehaviour
 	{
 		playernum = 1;
 		num = 0;
-	}
+        StartCoroutine(ShowFeedback(selectPlayer.gameObject));
+    }
     public void player1buttons(bool one_cap, bool one_led, bool one_res, bool one_trans)
     {
         if (state1 == false)
@@ -235,5 +237,12 @@ public class SelectPlayer : MonoBehaviour
     {
         get { return playernum; }
         set {playernum = value;}
+    }
+
+    IEnumerator ShowFeedback(GameObject feedback)
+    {
+        feedback.SetActive(true);
+        yield return new WaitForSeconds(2.0f);
+        feedback.SetActive(false);
     }
 }
