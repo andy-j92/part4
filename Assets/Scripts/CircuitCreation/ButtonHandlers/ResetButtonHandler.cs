@@ -7,6 +7,7 @@ public class ResetButtonHandler : MonoBehaviour {
     {
         var components = ConnectionHandler.circuitComponents;
         ConnectionHandler.circuitComponents = new List<GameObject>();
+        ConnectionHandler.wires = new List<Wire>();
 
         foreach (GameObject component in components)
         {
@@ -19,6 +20,5 @@ public class ResetButtonHandler : MonoBehaviour {
                 Destroy(component);
             }
         }
-
     }
 }

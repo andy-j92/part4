@@ -6,12 +6,15 @@ using UnityEngine.UI;
 
 public class TransformHandler : MonoBehaviour
 {
-
-    // public GameObject action;
-
     private static GameObject _wire;
-    private static GameObject _action;
+    private static float historyBoxSize;
     public static List<GameObject> actions = new List<GameObject>();
+
+    void Start()
+    {
+        actions = new List<GameObject>();
+        historyBoxSize = 126;
+    }
 
     public static void TransformSeries(GameObject resistor1, GameObject resistor2)
     {
@@ -23,11 +26,61 @@ public class TransformHandler : MonoBehaviour
         {
             nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetNextComponent()[0]);
             prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
+
+            if (prevComp2.GetNextComponent().Contains(resistor2))
+            {
+                prevComp2.GetNextComponent().Remove(resistor2);
+                prevComp2.GetNextComponent().AddRange(deResistor2.GetNextComponent());
+            }
+            if (nextComp2.GetPreviousComponent().Contains(resistor2))
+            {
+                nextComp2.GetPreviousComponent().Remove(resistor2);
+                nextComp2.GetPreviousComponent().AddRange(deResistor2.GetPreviousComponent());
+            }
         }
         else
         {
             nextComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[0]);
             prevComp2 = CircuitHandler.GetDoubledEndedObject(deResistor2.GetPreviousComponent()[1]);
+
+            if (prevComp2.GetNextComponent().Contains(resistor2))
+            {
+                prevComp2.GetNextComponent().Remove(resistor2);
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != prevComp2.GetCurrentComponent())
+                        prevComp2.GetNextComponent().Add(item);
+                }
+            }
+            else if(prevComp2.GetPreviousComponent().Contains(resistor2))
+            {
+                prevComp2.GetPreviousComponent().Remove(resistor2);
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != prevComp2.GetCurrentComponent())
+                        prevComp2.GetPreviousComponent().Add(item);
+                }
+            }
+
+            if (nextComp2.GetPreviousComponent().Contains(resistor2))
+            {
+                nextComp2.GetPreviousComponent().Remove(resistor2);
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != nextComp2.GetCurrentComponent())
+                        nextComp2.GetPreviousComponent().Add(item);
+                }
+            }
+            else if(nextComp2.GetNextComponent().Contains(resistor2))
+            {
+                nextComp2.GetNextComponent().Remove(resistor2);
+                foreach (var item in deResistor2.GetPreviousComponent())
+                {
+                    if (item != nextComp2.GetCurrentComponent())
+                        nextComp2.GetNextComponent().Add(item);
+                }
+            }
+
         }
 
 
@@ -49,18 +102,13 @@ public class TransformHandler : MonoBehaviour
         var actionText = "Series Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
             ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
-        var newAction = Instantiate(_action);
-        newAction.transform.SetParent(GameObject.FindGameObjectWithTag("History").transform);
-        newAction.GetComponent<Text>().text = actionText;
-        newAction.GetComponent<Text>().fontSize = 18;
-        newAction.transform.localScale = new Vector3(1, 1, 1);
-        newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
-        actions.Add(newAction);
+        AddAction(actionText);
 
         var newWire = Instantiate(_wire);
         newWire.transform.position = position;
         newWire.transform.localScale = new Vector3(3, 1, 1);
         newWire.transform.rotation = rotation;
+        CircuitHandler.wires.Add(new Wire(newWire, null, null));
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
         resistor2.SetActive(false);
         CircuitHandler.equation.Series(resistor1, resistor2);
@@ -117,7 +165,8 @@ public class TransformHandler : MonoBehaviour
 
             if (comp1 == resistor1 || comp2 == resistor1)
             {
-                item.GetWireObject().SetActive(false);
+                Destroy(item.GetWireObject());
+                CircuitHandler.connectedComponents.Remove(item.GetWireObject());
                 wire.Add(item);
             }
         }
@@ -129,14 +178,10 @@ public class TransformHandler : MonoBehaviour
             CircuitHandler.wires.Remove(item);
         }
 
-        var newAction = Instantiate(_action);
-        newAction.transform.SetParent(GameObject.FindGameObjectWithTag("History").transform);
-        newAction.GetComponent<Text>().text = actionText;
-        newAction.transform.localScale = new Vector3(1, 1, 1);
-        newAction.GetComponent<RectTransform>().position = new Vector3(newAction.GetComponent<RectTransform>().position.x, newAction.GetComponent<RectTransform>().position.y, 1);
-        actions.Add(newAction);
+        AddAction(actionText);
 
         CircuitHandler.equation.Parallel(resistor1, resistor2);
+        RemoveHangingComponents();
         TransformComplete(resistor1, resistor2);
     }
 
@@ -150,13 +195,68 @@ public class TransformHandler : MonoBehaviour
         CircuitHandler.selected2 = null;
     }
 
+    static void AddAction(string actionText)
+    {
+        Debug.Log(actions.Count);
+        var tag = actions.Count == 0 ? "Action" : "Action" + actions.Count;
+        var newAction = GameObject.FindGameObjectWithTag(tag);
+        if (actions.Count > 8)
+        {
+            var history = GameObject.FindGameObjectWithTag("History");
+            history.GetComponent<RectTransform>().offsetMax = new Vector2(history.GetComponent<RectTransform>().offsetMax.x + historyBoxSize, 0);
+        }
+        newAction.GetComponent<Text>().text = actionText;
+        actions.Add(newAction);
+
+    }
+
+    static void RemoveHangingComponents()
+    {
+        foreach (var item in CircuitHandler.connectedComponents.Keys)
+        {
+            if(item.activeSelf && item.tag == "Node")
+            {
+                var component = CircuitHandler.GetDoubledEndedObject(item);
+                if(component.GetPreviousComponent().Count == 0 && component.GetNextComponent().Count == 1)
+                {
+                    var nextComp = CircuitHandler.GetDoubledEndedObject(component.GetNextComponent()[0]);
+                    if (nextComp.GetPreviousComponent().Contains(item))
+                        nextComp.GetPreviousComponent().Remove(item);
+                    else if (nextComp.GetNextComponent().Contains(item))
+                        nextComp.GetNextComponent().Remove(item);
+
+                    foreach (var wire in CircuitHandler.wires)
+                    {
+                        if (wire.GetComponent1() == item || wire.GetComponent2() == item)
+                        {
+                            wire.GetWireObject().SetActive(false);
+                            item.SetActive(false);
+                        }
+                    }
+                }
+                else if(component.GetPreviousComponent().Count == 1 && component.GetNextComponent().Count == 0)
+                {
+                    var prevComp = CircuitHandler.GetDoubledEndedObject(component.GetPreviousComponent()[0]);
+                    if (prevComp.GetPreviousComponent().Contains(item))
+                        prevComp.GetPreviousComponent().Remove(item);
+                    else if (prevComp.GetNextComponent().Contains(item))
+                        prevComp.GetNextComponent().Remove(item);
+
+                    foreach (var wire in CircuitHandler.wires)
+                    {
+                        if (wire.GetComponent1() == item || wire.GetComponent2() == item)
+                        {
+                            wire.GetWireObject().SetActive(false);
+                            item.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public static void SetWireObject(GameObject wire)
     {
         _wire = wire;
-    }
-
-    public static void SetActionObject(GameObject action)
-    {
-        _action = action;
     }
 }

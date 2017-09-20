@@ -23,7 +23,7 @@ public class TemplateScript : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        isHidden = isWithinBoundary();
+        isHidden = IsWithinBoundary();
         if(isHidden)
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = true;
@@ -92,7 +92,7 @@ public class TemplateScript : MonoBehaviour {
         }
 	}
 
-    bool isWithinBoundary()
+    bool IsWithinBoundary()
     {
         var circuitPanel = GameObject.FindGameObjectWithTag("circuit_panel");
         if (RectTransformUtility.RectangleContainsScreenPoint(circuitPanel.GetComponent<RectTransform>(), Input.mousePosition, Camera.main))

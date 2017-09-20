@@ -105,7 +105,7 @@ public class SaveButtonHandler : MonoBehaviour {
     {
         var filePath = "Circuits/";
 
-        if (File.Exists(filePath + filename + ".txt"))
+        if (File.Exists(filePath + filename))
         {
             warning.SetActive(true);
             return;
@@ -128,27 +128,51 @@ public class SaveButtonHandler : MonoBehaviour {
     {
         var components = ConnectionHandler.circuitComponents;
         var wires = ConnectionHandler.wires;
+        Dictionary<GameObject, int> connectionCount = new Dictionary<GameObject, int>();
 
-        if (wires.Count == 0 || wires.Count != components.Count - wires.Count - 1)
+        if (components.Count == 2 || wires.Count == 0)
             return false;
 
-        List<bool> result = new List<bool>();
         foreach (var component in components)
         {
             if (component.tag != "Wire")
             {
                 foreach (var wire in wires)
                 {
-                    if (wire.GetComponent1() == component || wire.GetComponent2() == component)
+                    if (wire.GetComponent1() == null || wire.GetComponent2() == null)
+                        return false;
+                    else if (wire.GetComponent1() == component || wire.GetComponent2() == component)
                     {
-                        result.Add(true);
-                        break;
+                        if (!connectionCount.ContainsKey(component))
+                            connectionCount.Add(component, 1);
+                        else
+                        {
+                            int count = 0;
+                            connectionCount.TryGetValue(component, out count);
+                            connectionCount.Remove(component);
+                            connectionCount.Add(component, count + 1);
+                        }
                     }
                 }
             }
         }
-        return result.Count == components.Count - wires.Count ? true:false;
 
+        foreach (var item in connectionCount.Keys)
+        {
+            if(item.tag == "StartingNode" || item.tag == "EndingNode") { }
+            else
+            {
+                int count = 0;
+                connectionCount.TryGetValue(item, out count);
+
+                if (count == 1)
+                    item.GetComponent<SpriteRenderer>().color = Color.red;
+                if (count < 2)
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     IEnumerator ShowFeedback()

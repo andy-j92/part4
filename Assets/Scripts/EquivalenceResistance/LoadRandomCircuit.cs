@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LoadRandomCircuit : MonoBehaviour {
 
@@ -13,7 +14,7 @@ public class LoadRandomCircuit : MonoBehaviour {
 
     private int currentCircuitIndex = 0;
     private FileInfo[] circuits;
-    private List<GameObject> resistors;
+    public static List<GameObject> resistors;
     public static string filename;
     public static double answer;
 
@@ -21,10 +22,15 @@ public class LoadRandomCircuit : MonoBehaviour {
     {
         wire.GetComponent<BoxCollider2D>().isTrigger = true;
         circuits = new DirectoryInfo("Circuits").GetFiles("*.txt");
+
+        CircuitHandler.selected1 = null;
+        CircuitHandler.selected2 = null;
+        CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
-        TransformHandler.SetWireObject(wire);
-        TransformHandler.SetActionObject(action);
-        StartCoroutine(DrawCircuit(circuits[Random.Range(0, circuits.Length)]));
+        CircuitHandler.wires = new List<Wire>(); TransformHandler.SetWireObject(wire);
+
+        currentCircuitIndex = Random.Range(0, circuits.Length);
+        StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
     }
 
     IEnumerator DrawCircuit(FileInfo file)
@@ -163,6 +169,9 @@ public class LoadRandomCircuit : MonoBehaviour {
         var nodes = GameObject.FindGameObjectsWithTag("Node");
         var wires = GameObject.FindGameObjectsWithTag("Wire");
 
+        Destroy(GameObject.FindGameObjectsWithTag("StartingNode")[0]);
+        Destroy(GameObject.FindGameObjectsWithTag("EndingNode")[0]);
+
         foreach (var resistor in resistors)
         {
             Destroy(resistor);
@@ -172,16 +181,15 @@ public class LoadRandomCircuit : MonoBehaviour {
         {
             Destroy(node);
         }
-        Destroy(GameObject.FindGameObjectsWithTag("StartingNode")[0]);
-        Destroy(GameObject.FindGameObjectsWithTag("EndingNode")[0]);
-        foreach (var wire in wires)
+
+        foreach (var wire in CircuitHandler.wires)
         {
-            Destroy(wire);
+            Destroy(wire.GetWireObject());
         }
 
         foreach (var action in TransformHandler.actions)
         {
-            Destroy(action);
+            action.GetComponent<Text>().text = "";
         }
 
         CircuitHandler.selected1 = null;
@@ -189,6 +197,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
         CircuitHandler.wires = new List<Wire>();
+        TransformHandler.actions = new List<GameObject>();
     }
 
     public void DisableAll()

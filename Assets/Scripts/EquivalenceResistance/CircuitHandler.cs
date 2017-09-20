@@ -21,6 +21,13 @@ public class CircuitHandler : MonoBehaviour {
 
     void Start()
     {
+        componentOrder = new List<DoubleEnded>();
+        components = new List<GameObject>();
+        connectedComponents = new Dictionary<GameObject, List<GameObject>>();
+        connectionQueue = new Queue<GameObject>();
+        processedComponents = new List<GameObject>();
+        equation = new Equation();
+        wires = new List<Wire>();
         selected1 = null;
         selected2 = null;
         isSaved = false;
@@ -29,9 +36,9 @@ public class CircuitHandler : MonoBehaviour {
     void Update()
     {
         int count = 0;
-        foreach (var item in connectedComponents.Keys)
+        foreach (var item in LoadRandomCircuit.resistors)
         {
-            if (item.tag.Contains("Resistor") && item.activeSelf)
+            if (item.activeSelf)
                 count++;
         }
 
@@ -41,6 +48,7 @@ public class CircuitHandler : MonoBehaviour {
 
     public void StartSetUp()
     {
+        componentOrder = new List<DoubleEnded>();
         var startingComp = GameObject.FindGameObjectWithTag("StartingNode");
         connectionQueue.Enqueue(startingComp);
         while (connectionQueue.Count > 0)
@@ -196,7 +204,7 @@ public class CircuitHandler : MonoBehaviour {
             {
                     connectedComponents.Add(item);
             }
-           
+
             if (connectedComponents.Count > 2)
                 return null;
             else
@@ -319,8 +327,10 @@ public class CircuitHandler : MonoBehaviour {
         bool foundComp2 = false;
         
         Queue<GameObject> nextNodes = new Queue<GameObject>();
+        List<GameObject> processedComp = new List<GameObject>();
         bool backwards = false;
         nextNodes.Enqueue(prevNode1);
+        processedComp.Add(prevNode1);
         while (nextNodes.Count > 0)
         {
             GameObject nextNode = nextNodes.Dequeue();
@@ -333,7 +343,7 @@ public class CircuitHandler : MonoBehaviour {
             {
                 foreach (var item in currentNode.GetPreviousComponent())
                 {
-                    if (item.tag == "Node")
+                    if (item.tag == "Node" && !processedComp.Contains(item))
                         nextNodes.Enqueue(item);
                 }
             }
@@ -341,12 +351,17 @@ public class CircuitHandler : MonoBehaviour {
             {
                 foreach (var item in currentNode.GetNextComponent())
                 {
-                    if (item.tag == "Node")
+                    if (item.tag == "Node" && !processedComp.Contains(item))
                         nextNodes.Enqueue(item);
                 }
             }
 
-            if (currentNode.GetNextComponent().Contains(component2.GetCurrentComponent()) || currentNode.GetPreviousComponent().Contains(component2.GetCurrentComponent()))
+            if (currentNode.GetNextComponent() != null && currentNode.GetNextComponent().Contains(component2.GetCurrentComponent()))
+            {
+                foundComp2 = true;
+                break;
+            }
+            else if(currentNode.GetPreviousComponent() != null && currentNode.GetPreviousComponent().Contains(component2.GetCurrentComponent()))
             {
                 foundComp2 = true;
                 break;
@@ -363,6 +378,8 @@ public class CircuitHandler : MonoBehaviour {
             {
                 GameObject nextNode = nextNodes.Dequeue();
                 DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
+                Debug.Log(nextNode.GetInstanceID());
+
                 if (currentNode.GetNextComponent().Count == 0)
                 {
                     backwards = true;
@@ -371,15 +388,17 @@ public class CircuitHandler : MonoBehaviour {
                 {
                     foreach (var item in currentNode.GetPreviousComponent())
                     {
-                        if (item.tag == "Node")
+                        if (item.tag == "Node" && !processedComp.Contains(item))
                             nextNodes.Enqueue(item);
                     }
                 }
                 else
                 {
+                    if (currentNode.GetPreviousComponent() != null && currentNode.GetPreviousComponent().Contains(nextNode1))
+                        return true;
                     foreach (var item in currentNode.GetNextComponent())
                     {
-                        if (item.tag == "Node")
+                        if (item.tag == "Node" && !processedComp.Contains(item))
                             nextNodes.Enqueue(item);
                     }
                 }
