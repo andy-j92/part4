@@ -27,7 +27,8 @@ public class LoadRandomCircuit : MonoBehaviour {
         CircuitHandler.selected2 = null;
         CircuitHandler.connectedComponents = new Dictionary<GameObject, List<GameObject>>();
         CircuitHandler.components = new List<GameObject>();
-        CircuitHandler.wires = new List<Wire>(); TransformHandler.SetWireObject(wire);
+        CircuitHandler.wires = new List<Wire>();
+        TransformHandler.SetWireObject(wire);
 
         currentCircuitIndex = Random.Range(0, circuits.Length);
         StartCoroutine(DrawCircuit(circuits[currentCircuitIndex]));
@@ -40,6 +41,7 @@ public class LoadRandomCircuit : MonoBehaviour {
         resistors = new List<GameObject>();
         string text;
         int resistorCount = 1;
+
         while((text = reader.ReadLine()) != "")
         {
             var info = text.Split(' ');
@@ -182,9 +184,9 @@ public class LoadRandomCircuit : MonoBehaviour {
             Destroy(node);
         }
 
-        foreach (var wire in CircuitHandler.wires)
+        foreach (var wire in wires)
         {
-            Destroy(wire.GetWireObject());
+            Destroy(wire);
         }
 
         foreach (var action in TransformHandler.actions)
