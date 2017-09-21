@@ -161,15 +161,15 @@ public class TransformHandler : MonoBehaviour
         List<Wire> wire = new List<Wire>();
         var component = CircuitHandler.GetDoubledEndedObject(prevComp1);
         if (component.GetNextComponent().Contains(resistor1))
-        {
             component.GetNextComponent().Remove(resistor1);
-        }
+        else if(component.GetPreviousComponent().Contains(resistor1))
+            component.GetPreviousComponent().Remove(resistor1);
 
         component = CircuitHandler.GetDoubledEndedObject(nextComp1);
         if (component.GetPreviousComponent().Contains(resistor1))
-        {
             component.GetPreviousComponent().Remove(resistor1);
-        }
+        else if(component.GetNextComponent().Contains(resistor1))
+            component.GetNextComponent().Remove(resistor1);
 
 
         foreach (var item in CircuitHandler.wires)

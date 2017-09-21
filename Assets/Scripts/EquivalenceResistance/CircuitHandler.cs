@@ -304,6 +304,7 @@ public class CircuitHandler : MonoBehaviour {
                 TransformHandler.TransformParallel(selected2.GetCurrentComponent(), selected1.GetCurrentComponent());
             }
         }
+        processedComponents = new List<GameObject>();
     }
 
     bool CheckParallel(DoubleEnded component1, DoubleEnded component2)
@@ -328,18 +329,14 @@ public class CircuitHandler : MonoBehaviour {
         
         Queue<GameObject> nextNodes = new Queue<GameObject>();
         List<GameObject> processedComp = new List<GameObject>();
-        bool backwards = false;
         nextNodes.Enqueue(prevNode1);
         processedComp.Add(prevNode1);
         while (nextNodes.Count > 0)
         {
             GameObject nextNode = nextNodes.Dequeue();
             DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
-            if(currentNode.GetNextComponent().Count == 0)
-            {
-                backwards = true;
-            }
-            if(backwards)
+
+            if(currentNode.GetPreviousComponent() != null)
             {
                 foreach (var item in currentNode.GetPreviousComponent())
                 {
@@ -347,7 +344,7 @@ public class CircuitHandler : MonoBehaviour {
                         nextNodes.Enqueue(item);
                 }
             }
-            else
+            if(currentNode.GetNextComponent() != null)
             {
                 foreach (var item in currentNode.GetNextComponent())
                 {
@@ -366,9 +363,9 @@ public class CircuitHandler : MonoBehaviour {
                 foundComp2 = true;
                 break;
             }
+            processedComp.Add(nextNode);
         }
 
-        backwards = false;
         nextNodes = new Queue<GameObject>();
         if (foundComp2)
         {
@@ -379,11 +376,7 @@ public class CircuitHandler : MonoBehaviour {
                 GameObject nextNode = nextNodes.Dequeue();
                 DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
 
-                if (currentNode.GetNextComponent().Count == 0)
-                {
-                    backwards = true;
-                }
-                if (backwards)
+                if (currentNode.GetPreviousComponent() != null)
                 {
                     foreach (var item in currentNode.GetPreviousComponent())
                     {
@@ -391,10 +384,8 @@ public class CircuitHandler : MonoBehaviour {
                             nextNodes.Enqueue(item);
                     }
                 }
-                else
+                if (currentNode.GetNextComponent() != null)
                 {
-                    if (currentNode.GetPreviousComponent() != null && currentNode.GetPreviousComponent().Contains(nextNode1))
-                        return true;
                     foreach (var item in currentNode.GetNextComponent())
                     {
                         if (item.tag == "Node" && !processedComp.Contains(item))
@@ -406,6 +397,7 @@ public class CircuitHandler : MonoBehaviour {
                 {
                     return true;
                 }
+                processedComp.Add(nextNode);
             }
         }
 
