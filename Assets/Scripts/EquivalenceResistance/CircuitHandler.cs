@@ -378,7 +378,6 @@ public class CircuitHandler : MonoBehaviour {
             {
                 GameObject nextNode = nextNodes.Dequeue();
                 DoubleEnded currentNode = GetDoubledEndedObject(nextNode);
-                Debug.Log(nextNode.GetInstanceID());
 
                 if (currentNode.GetNextComponent().Count == 0)
                 {
