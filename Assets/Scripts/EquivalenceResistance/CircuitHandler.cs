@@ -9,6 +9,7 @@ public class CircuitHandler : MonoBehaviour {
     public static List<DoubleEnded> componentOrder = new List<DoubleEnded>();
     public static List<GameObject> components = new List<GameObject>();
     public static List<Wire> wires = new List<Wire>();
+    public GameObject instruction;
 
     public static Dictionary<GameObject, List<GameObject>> connectedComponents = new Dictionary<GameObject, List<GameObject>>();
     private Queue<GameObject> connectionQueue = new Queue<GameObject>();
@@ -31,6 +32,7 @@ public class CircuitHandler : MonoBehaviour {
         selected1 = null;
         selected2 = null;
         isSaved = false;
+        StartCoroutine(ShowInstruction());
     }
 
     void Update()
@@ -185,6 +187,10 @@ public class CircuitHandler : MonoBehaviour {
                 StartCoroutine(ShowFeedBack("The Resistors are not in series."));
             }
         }
+        else
+        {
+            StartCoroutine(ShowFeedBack("You need to choose two resistors."));
+        }
     }
 
     GameObject CheckSeries(DoubleEnded component1, DoubleEnded component2)
@@ -272,7 +278,11 @@ public class CircuitHandler : MonoBehaviour {
                 StartCoroutine(ShowFeedBack("The Resistors are not in parallel."));
             }
         }
-        if(isParallel1 || isParallel2)
+        else
+        {
+            StartCoroutine(ShowFeedBack("You need to choose two resistors."));
+        }
+        if (isParallel1 || isParallel2)
         {
             //when resistors have two prevs with no nexts
             var prev1 = selected1.GetPreviousComponent()[0];
@@ -438,6 +448,13 @@ public class CircuitHandler : MonoBehaviour {
         feedback.GetComponent<Text>().text = feedbackText;
         yield return new WaitForSeconds(2);
         feedback.GetComponent<Text>().text = "";
+    }
+
+    IEnumerator ShowInstruction()
+    {
+        instruction.SetActive(true);
+        yield return new WaitForSeconds(2);
+        instruction.SetActive(false);
     }
 
     void SaveEquation()
