@@ -28,7 +28,7 @@ public class HelpScreen : MonoBehaviour
         images[11] = Resources.Load<Sprite>("GameSprite/eq_two");
         images[12] = Resources.Load<Sprite>("GameSprite/eq_three");
         images[13] = Resources.Load<Sprite>("GameSprite/eq_four");
-        images[14] = Resources.Load<Sprite>("GameSprite/playscreen");
+        images[14] = Resources.Load<Sprite>("GameSprite/new_playscreen");
     }
 
     public void Help_Back(string name)
@@ -130,6 +130,8 @@ public class HelpScreen : MonoBehaviour
             case 14:
                 image.sprite = images[14];
                 instructions.text = "< Objective >: Calculate and Enter the correct equvialent resistance of the circuit. \n<Score System >: Player to answer correctly will < + score >. \nIF, both players answer correctly within the give time, first person to answer will gain extra points. \n \n< EXIT > : | esc |";
+                break;
+            default:
                 break;
         }
     }
