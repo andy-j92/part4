@@ -166,8 +166,8 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: a30f933bed2f6504bae572c0ef6aaeb7, type: 3}
     m_FontSize: 28
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
+    m_BestFit: 1
+    m_MinSize: 10
     m_MaxSize: 200
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -280,8 +280,8 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: a30f933bed2f6504bae572c0ef6aaeb7, type: 3}
     m_FontSize: 28
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
+    m_BestFit: 1
+    m_MinSize: 10
     m_MaxSize: 200
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -422,7 +422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 0
-  m_AspectRatio: 1.86
+  m_AspectRatio: 2.254902
 --- !u!114 &457702795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -820,8 +820,8 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: a30f933bed2f6504bae572c0ef6aaeb7, type: 3}
     m_FontSize: 28
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
+    m_BestFit: 1
+    m_MinSize: 10
     m_MaxSize: 200
     m_Alignment: 4
     m_AlignByGeometry: 0

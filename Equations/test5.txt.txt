@@ -1,2 +1,0 @@
-Resistor2,Resistor1,parallel
-

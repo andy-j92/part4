@@ -9,7 +9,7 @@ public class GamePlay : MonoBehaviour
     public Text help;
     public Transform helpScreen;
     public Boolean state = false;
-    public Button playerOne, playerTwo;
+    public Button playerOne, playerTwo, instruction;
     public int one, two, numplayer;
     public Image pOne, pTwo;
     public Animator aOne, aTwo;
@@ -56,7 +56,7 @@ public class GamePlay : MonoBehaviour
         }
         else
         {
-            playerTwo.gameObject.SetActive (true);
+            playerTwo.gameObject.SetActive(true);
             p2ans.gameObject.SetActive(true);
             switch (one)
             {
@@ -99,7 +99,7 @@ public class GamePlay : MonoBehaviour
     {
         gameOver.gameObject.SetActive(false);
         help.text = " < Objective >: Calculate and Enter the correct equvialent resistance of the circuit. \n < Score System >: Player to answer correct will < +score >. \n IF, both players answer correct within the give time, first person to answer will gain extra points. \n \n<EXIT> : | esc | ";
-        InvokeRepeating("decreaseTimeRemaining", 1, 1);
+        StartCoroutine(Instruction(instruction.gameObject));
     }
 
     private void Update()
@@ -127,7 +127,7 @@ public class GamePlay : MonoBehaviour
 
                 if (numplayer == 1)
                 {
-                    final.text = "SCORE: " + p1s + "" ;
+                    final.text = "SCORE: " + p1s + "";
                 }
 
                 else
@@ -183,7 +183,7 @@ public class GamePlay : MonoBehaviour
         }
 
         time.text = timer + "";
-        
+
     }
 
     void decreaseTimeRemaining()
@@ -254,8 +254,8 @@ public class GamePlay : MonoBehaviour
         }
     }
 
-    void check2answer ()
-    { 
+    void check2answer()
+    {
         if (p2ans.isFocused && p2ans.text != "" && Input.GetKey(KeyCode.Return))
         {
             wrong2.gameObject.SetActive(false);
@@ -297,5 +297,13 @@ public class GamePlay : MonoBehaviour
         feedback.SetActive(true);
         yield return new WaitForSeconds(2.0f);
         feedback.SetActive(false);
-    } 
+    }
+
+    IEnumerator Instruction (GameObject inst)
+    {
+        inst.SetActive(true);
+        yield return new WaitForSeconds(3.0f);
+        inst.SetActive(false);
+        InvokeRepeating("decreaseTimeRemaining", 1, 1);
+    }
 }
