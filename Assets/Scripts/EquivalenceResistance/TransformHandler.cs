@@ -138,24 +138,38 @@ public class TransformHandler : MonoBehaviour
     {
         var deComp1 = CircuitHandler.GetDoubledEndedObject(resistor1);
 
-        var prevComp1 = deComp1.GetPreviousComponent();
-        var nextComp1 = deComp1.GetNextComponent();
+        GameObject prevComp1 = null;
+        GameObject nextComp1 = null;
+
+        if(deComp1.GetPreviousComponent().Count == 2)
+        {
+            prevComp1 = deComp1.GetPreviousComponent()[0];
+            nextComp1 = deComp1.GetPreviousComponent()[1];
+        }
+        else
+        {
+            prevComp1 = deComp1.GetPreviousComponent()[0];
+            nextComp1 = deComp1.GetNextComponent()[0];
+        }
+
+        Debug.Log(prevComp1.GetInstanceID());
+        Debug.Log(nextComp1.GetInstanceID());
 
         var actionText = "Parallel Transformation: \n R(" + resistor1.GetComponentInChildren<TextMesh>().text +
         ") & R(" + resistor2.GetComponentInChildren<TextMesh>().text + ")";
 
         List<Wire> wire = new List<Wire>();
-        var component = CircuitHandler.GetDoubledEndedObject(prevComp1[0]);
+        var component = CircuitHandler.GetDoubledEndedObject(prevComp1);
         if (component.GetNextComponent().Contains(resistor1))
-        {
             component.GetNextComponent().Remove(resistor1);
-        }
-
-        component = CircuitHandler.GetDoubledEndedObject(nextComp1[0]);
-        if (component.GetPreviousComponent().Contains(resistor1))
-        {
+        else if(component.GetPreviousComponent().Contains(resistor1))
             component.GetPreviousComponent().Remove(resistor1);
-        }
+
+        component = CircuitHandler.GetDoubledEndedObject(nextComp1);
+        if (component.GetPreviousComponent().Contains(resistor1))
+            component.GetPreviousComponent().Remove(resistor1);
+        else if(component.GetNextComponent().Contains(resistor1))
+            component.GetNextComponent().Remove(resistor1);
 
 
         foreach (var item in CircuitHandler.wires)
@@ -197,10 +211,9 @@ public class TransformHandler : MonoBehaviour
 
     static void AddAction(string actionText)
     {
-        Debug.Log(actions.Count);
         var tag = actions.Count == 0 ? "Action" : "Action" + actions.Count;
         var newAction = GameObject.FindGameObjectWithTag(tag);
-        if (actions.Count > 8)
+        if (actions.Count > 7)
         {
             var history = GameObject.FindGameObjectWithTag("History");
             history.GetComponent<RectTransform>().offsetMax = new Vector2(history.GetComponent<RectTransform>().offsetMax.x + historyBoxSize, 0);
