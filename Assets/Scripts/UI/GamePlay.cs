@@ -236,7 +236,7 @@ public class GamePlay : MonoBehaviour
                         p2ans.interactable = true;
                         correct1 = false;
                         correct2 = false;
-                        load.NextCircuit();
+                        load.LoadNewCircuit();
                         timer = 120;
                     }
                     else
