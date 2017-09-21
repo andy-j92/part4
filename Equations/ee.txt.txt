@@ -1,3 +1,0 @@
-Resistor1,Resistor3,series
-Resistor1,Resistor2,series
-

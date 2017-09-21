@@ -130,8 +130,8 @@ public class SaveButtonHandler : MonoBehaviour {
         var wires = ConnectionHandler.wires;
         Dictionary<GameObject, int> connectionCount = new Dictionary<GameObject, int>();
 
-        if (components.Count == 2 || wires.Count == 0)
-            return false;
+        //if (components.Count == 2 || wires.Count == 0)
+        //    return false;
 
         foreach (var component in components)
         {
@@ -157,7 +157,8 @@ public class SaveButtonHandler : MonoBehaviour {
             }
         }
 
-        foreach (var item in connectionCount.Keys)
+        var isIncomplete = false;
+        foreach (var item in ConnectionHandler.circuitComponents)
         {
             if(item.tag == "StartingNode" || item.tag == "EndingNode") { }
             else
@@ -165,12 +166,15 @@ public class SaveButtonHandler : MonoBehaviour {
                 int count = 0;
                 connectionCount.TryGetValue(item, out count);
 
-                if (count == 1)
-                    item.GetComponent<SpriteRenderer>().color = Color.red;
                 if (count < 2)
-                    return false;
+                {
+                    item.GetComponent<SpriteRenderer>().color = Color.red;
+                    isIncomplete = true;
+                }
             }
         }
+        if (isIncomplete)
+            return false;
 
         return true;
     }

@@ -104,14 +104,22 @@ public class TransformHandler : MonoBehaviour
 
         AddAction(actionText);
 
+        var positionDiff = CalculatePositionDiff(prevComp2.GetCurrentComponent(), nextComp2.GetCurrentComponent());
+        var centrePos = CalculateCentrePos(prevComp2.GetCurrentComponent(), nextComp2.GetCurrentComponent());
+
         var newWire = Instantiate(_wire);
-        newWire.transform.position = position;
-        newWire.transform.localScale = new Vector3(3, 1, 1);
+        newWire.transform.localScale = new Vector3(positionDiff * 1.5f, 1, 1);
         newWire.transform.rotation = rotation;
-        CircuitHandler.wires.Add(new Wire(newWire, null, null));
+        if (Math.Round(rotation.z) == 1.0f)
+            newWire.transform.position = new Vector3(position.x, centrePos, 2); 
+        else
+            newWire.transform.position = new Vector3(centrePos, position.y, 2);
+
+        CircuitHandler.wires.Add(new Wire(newWire, prevComp2.GetCurrentComponent(), nextComp2.GetCurrentComponent()));
         resistor1.GetComponentInChildren<TextMesh>().text = CalculateSeriesResistance(resistor1, resistor2);
         resistor2.SetActive(false);
         CircuitHandler.equation.Series(resistor1, resistor2);
+        RemoveHangingComponents();
         TransformComplete(resistor1, resistor2);
     }
 
@@ -132,6 +140,22 @@ public class TransformHandler : MonoBehaviour
         double.TryParse(comp2.GetComponentInChildren<TextMesh>().text, out resistance2);
         var result = Math.Round(((resistance1 * resistance2) / (resistance1 + resistance2)), 2);
         return result.ToString();
+    }
+
+    static float CalculatePositionDiff(GameObject node1, GameObject node2)
+    {
+        var xDiff = Math.Abs(node1.transform.position.x - node2.transform.position.x);
+        var yDiff = Math.Abs(node1.transform.position.y - node2.transform.position.y);
+        return xDiff > yDiff ? xDiff : yDiff;
+    }
+
+    static float CalculateCentrePos(GameObject node1, GameObject node2)
+    {
+        var xDiff = Math.Abs(node1.transform.position.x - node2.transform.position.x);
+        var yDiff = Math.Abs(node1.transform.position.y - node2.transform.position.y);
+        var xCentrePos = (node1.transform.position.x + node2.transform.position.x) / 2;
+        var yCentrePos = (node1.transform.position.y + node2.transform.position.y) / 2;
+        return xDiff > yDiff ? xCentrePos : yCentrePos;
     }
 
     public static void TransformParallel(GameObject resistor1, GameObject resistor2)
@@ -225,6 +249,7 @@ public class TransformHandler : MonoBehaviour
 
     static void RemoveHangingComponents()
     {
+        var foundHanging = false;
         foreach (var item in CircuitHandler.connectedComponents.Keys)
         {
             if(item.activeSelf && item.tag == "Node")
@@ -244,6 +269,7 @@ public class TransformHandler : MonoBehaviour
                         {
                             wire.GetWireObject().SetActive(false);
                             item.SetActive(false);
+                            foundHanging = true;
                         }
                     }
                 }
@@ -261,11 +287,24 @@ public class TransformHandler : MonoBehaviour
                         {
                             wire.GetWireObject().SetActive(false);
                             item.SetActive(false);
+                            foundHanging = true;
                         }
                     }
                 }
             }
+            else
+            {
+                foreach (var wire in CircuitHandler.wires)
+                {
+                    var comp1 = wire.GetComponent1();
+                    var comp2 = wire.GetComponent2();
+                    if (!comp1.activeSelf || !comp2.activeSelf)
+                        wire.GetWireObject().SetActive(false);
+                }
+            }
         }
+        if (foundHanging)
+            RemoveHangingComponents();
     }
 
     public static void SetWireObject(GameObject wire)
