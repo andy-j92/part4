@@ -211,10 +211,9 @@ public class TransformHandler : MonoBehaviour
 
     static void AddAction(string actionText)
     {
-        Debug.Log(actions.Count);
         var tag = actions.Count == 0 ? "Action" : "Action" + actions.Count;
         var newAction = GameObject.FindGameObjectWithTag(tag);
-        if (actions.Count > 8)
+        if (actions.Count > 7)
         {
             var history = GameObject.FindGameObjectWithTag("History");
             history.GetComponent<RectTransform>().offsetMax = new Vector2(history.GetComponent<RectTransform>().offsetMax.x + historyBoxSize, 0);
