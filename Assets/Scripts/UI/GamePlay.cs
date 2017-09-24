@@ -21,7 +21,7 @@ public class GamePlay : MonoBehaviour
     public Boolean pause;
     public InputField p1ans, p2ans;
     public double answer;
-    public LoadRandomCircuit load = new LoadRandomCircuit();
+    public LoadRandomCircuit load;
 
     public double p1answer, p2answer;
     public double p1s = 0.0, p2s = 0.0;
@@ -97,6 +97,7 @@ public class GamePlay : MonoBehaviour
 
     void Start()
     {
+        load = FindObjectOfType<LoadRandomCircuit>();
         gameOver.gameObject.SetActive(false);
         help.text = " < Objective >: Calculate and Enter the correct equvialent resistance of the circuit. \n < Score System >: Player to answer correct will < +score >. \n IF, both players answer correct within the give time, first person to answer will gain extra points. \n \n<EXIT> : | esc | ";
         StartCoroutine(Instruction(instruction.gameObject));
