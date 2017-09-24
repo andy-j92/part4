@@ -166,7 +166,7 @@ public class SaveButtonHandler : MonoBehaviour {
                 int count = 0;
                 connectionCount.TryGetValue(item, out count);
 
-                if (count < 2)
+                if (count < 2 && item.tag != "Wire")
                 {
                     item.GetComponent<SpriteRenderer>().color = Color.red;
                     isIncomplete = true;
@@ -175,7 +175,7 @@ public class SaveButtonHandler : MonoBehaviour {
         }
         if (isIncomplete)
             return false;
-
+        isIncomplete = false;
         return true;
     }
 
